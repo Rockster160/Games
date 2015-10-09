@@ -84,9 +84,11 @@ Dir["./*"].inject(0) {|count, path| count + %x{wc -l < "#{path}"}.to_i}
 
 =end
 
-require 'pry-remote' # TODO Remove this!
+require 'pry-rails' # TODO Remove this!
 
+require "sqlite3"
 require 'io/console'
+require './schema.rb'
 require './monkey_patches.rb'
 require './evals.rb'
 require './key_bindings.rb'
