@@ -1,6 +1,7 @@
-class LightSource
+class LightSource < BaseObject
   include Item
 
+  attr_accessor :equipment_slot, :is_equipped, :bonus_strength, :bonus_defense, :bonus_accuracy, :bonus_speed, :bonus_health, :bonus_mana, :bonus_energy, :bonus_self_regen, :bonus_magic_power
   attr_accessor :range, :duration, :is_lighting
 
   def update_vision

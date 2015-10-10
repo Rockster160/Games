@@ -1,14 +1,4 @@
-# MagicWeapon.new({
-#   name: 'string',
-#   icon: 'string-single character',
-#   color: :symbol,
-#   weight: integer,
-#   stack_size: integer,
-#   usage_script: 'script',
-#   description: 'string'
-# })
-
-class StaticItem
+class StaticItem < BaseObject
   include Item
 
   attr_accessor :usage_script

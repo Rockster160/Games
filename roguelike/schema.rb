@@ -1,22 +1,88 @@
-ITEM_SCHEMA = {
-
-}
+require 'pry-rails'
+require 'sqlite3'
+require './monkey_patches.rb'
 
 class Schema
 
+  # attr_accessor :name, :weight, :icon, :color, :stack_size, :x, :y, :depth, :auto_pickup, :description, :usable_after_death
+  BASE_ITEM_TABLE = {
+    name: 'TEXT',
+    weight: 'REAL',
+    icon: 'TEXT',
+    color: 'TEXT',
+    stack_size: 'INTEGER',
+    x: 'INTEGER',
+    y: 'INTEGER',
+    depth: 'INTEGER',
+    auto_pickup: 'TEXT',
+    description: 'TEXT',
+    usable_after_death: 'TEXT'
+  }
+
+  # attr_accessor :range, :destroy_on_collision_with, :on_hit_effect, :on_hit_damage, :collided_action, :projectile_speed, :is_thrown, :ammo_type, :shoot_damage
+  PROJECTILE_TABLE = {
+    range: 'INTEGER',
+    destroy_on_collision_with: 'TEXT',
+    on_hit_effect: 'TEXT',
+    on_hit_damage: 'INTEGER',
+    collided_action: 'TEXT',
+    projectile_speed: 'INTEGER',
+    is_thrown: 'TEXT',
+    ammo_type: 'TEXT',
+    shoot_damage: 'INTEGER'
+  }
+
+  # attr_accessor :mana_cost, :is_projectile, :non_projectile_script, :type
+  SPELL_TABLE = {
+    mana_cost: 'INTEGER',
+    is_projectile: 'TEXT',
+    non_projectile_script: 'TEXT',
+    type: 'TEXT'
+  }
+
+# attr_accessor :equipment_slot, :is_equipped, :bonus_strength, :bonus_defense, :bonus_accuracy, :bonus_speed, :bonus_health, :bonus_mana, :bonus_energy, :bonus_self_regen, :bonus_magic_power
+  EQUIPPABLE_TABLE = {
+    equipment_slot: 'TEXT',
+    is_equipped: 'TEXT',
+    bonus_strength: 'INTEGER',
+    bonus_defense: 'INTEGER',
+    bonus_accuracy: 'INTEGER',
+    bonus_speed: 'INTEGER',
+    bonus_health: 'INTEGER',
+    bonus_mana: 'INTEGER',
+    bonus_energy: 'INTEGER',
+    bonus_self_regen: 'INTEGER',
+    bonus_magic_power: 'INTEGER'
+  }
+
+  # attr_accessor :restore_energy, :restore_mana, :restore_health, :usage_verb, :execution_script
+  CONSUMABLE_TABLE = {
+    restore_energy: 'INTEGER',
+    restore_mana: 'INTEGER',
+    restore_health: 'INTEGER',
+    usage_verb: 'TEXT',
+    execution_script: 'TEXT'
+  }
+
   def self.reset
-    File.delete("test.db")
+    if File.file?('test.db')
+      File.delete("test.db")
+    end
     $sqldb = SQLite3::Database.new "test.db"
     $sqldb.results_as_hash = true
     $sqldb.execute "CREATE TABLE constants(item_ids INTEGER)"
     $sqldb.execute "INSERT INTO constants(item_ids) VALUES (?)", 1
 
-    Item.build_table(DEFAULT_SCHEMA.merge({
-      power: 'INTEGER',
-      x: 'INTEGER',
-      y: 'INTEGER',
-      is_big: 'TEXT'
-    }))
+    # Need the Player Schema
+    StaticItem.build_table(BASE_ITEM_TABLE.merge({usage_script: 'TEXT'}))
+    SpellBook.build_table(BASE_ITEM_TABLE.merge({element: 'TEXT', castable_spells: 'TEXT'}))
+    Spell.build_table(BASE_ITEM_TABLE.merge_many(PROJECTILE_TABLE, SPELL_TABLE))
+    RangedWeapon.build_table(BASE_ITEM_TABLE.merge_many(PROJECTILE_TABLE, EQUIPPABLE_TABLE))
+    MagicWeapon.build_table(BASE_ITEM_TABLE.merge({range: 'INTEGER', type: 'TEXT', mana_usage: 'INTEGER'}))
+    MeleeWeapon.build_table(BASE_ITEM_TABLE.merge(EQUIPPABLE_TABLE))
+    LightSource.build_table(BASE_ITEM_TABLE.merge_many(EQUIPPABLE_TABLE, {range: 'INTEGER', duration: 'INTEGER', is_lighting: 'TEXT'}))
+    Equipment.build_table(BASE_ITEM_TABLE.merge_many(EQUIPPABLE_TABLE, {contains: 'TEXT', size: 'INTEGER'}))
+    Consumable.build_table(BASE_ITEM_TABLE.merge(CONSUMABLE_TABLE))
   end
 
   def self.load
@@ -29,7 +95,7 @@ class Schema
     $sqldb.execute "UPDATE constants SET #{table}_ids = ?", next_id + 1
     next_id
   end
-  
+
 end
 
 class BaseObject

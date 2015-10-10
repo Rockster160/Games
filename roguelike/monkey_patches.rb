@@ -48,6 +48,15 @@ class Array
 end
 
 class Hash
+
+  def merge_many(*hashes)
+    new_hash = self
+    hashes.each do |hash|
+      new_hash.merge!(hash)
+    end
+    new_hash
+  end
+
   def filter(*syms)
     new_hash = {}
     syms.flatten.each do |sym|
@@ -55,6 +64,7 @@ class Hash
     end
     new_hash
   end
+
 end
 
 class String

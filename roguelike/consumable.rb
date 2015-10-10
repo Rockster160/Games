@@ -1,8 +1,7 @@
-class Consumable
+class Consumable < BaseObject
   include Item
 
-  attr_accessor :restore_energy, :restore_mana, :restore_health, :usage_verb
-  attr_accessor :execution_script
+  attr_accessor :restore_energy, :restore_mana, :restore_health, :usage_verb, :execution_script
 
   def consume
     tick = false

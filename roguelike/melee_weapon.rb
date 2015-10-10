@@ -1,22 +1,7 @@
-# MeleeWeapon.new({
-#   name: 'string',
-#   icon: 'string-single character',
-#   equipment_slot: :symbol,
-#   color: :symbol,
-#   weight: integer,
-#   bonus_strength: integer(optional),
-#   bonus_defense: integer(optional),
-#   bonus_accuracy: integer(optional),
-#   bonus_speed: integer(optional),
-#   bonus_health: integer(optional),
-#   bonus_mana: integer(optional),
-#   bonus_energy: integer(optional),
-#   bonus_self_regen: integer(optional)
-# })
-# Two-handed??
-
-class MeleeWeapon
+class MeleeWeapon < BaseObject
   include Item
+  
+  attr_accessor :equipment_slot, :bonus_strength, :bonus_defense, :bonus_accuracy, :bonus_speed, :bonus_health, :bonus_mana, :bonus_energy, :bonus_self_regen, :bonus_magic_power
 
   def self.generate
     new({

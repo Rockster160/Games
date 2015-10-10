@@ -1,21 +1,4 @@
-# SpellBook.new({
-#   name: 'string',
-#   icon: 'string-single character',
-#   color: :symbol,
-#   weight: integer,
-#   element: 'string',
-#   castable_spells: ['strings'],
-#   bonus_strength: integer(optional),
-#   bonus_defense: integer(optional),
-#   bonus_accuracy: integer(optional),
-#   bonus_speed: integer(optional),
-#   bonus_health: integer(optional),
-#   bonus_mana: integer(optional),
-#   bonus_energy: integer(optional),
-#   bonus_self_regen: integer(optional)
-# })
-
-class SpellBook
+class SpellBook < BaseObject
   include Item
 
   attr_accessor :element, :castable_spells

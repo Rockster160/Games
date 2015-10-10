@@ -1,21 +1,4 @@
-# MagicWeapon.new({
-#   name: 'string',
-#   icon: 'string-single character',
-#   equipment_slot: :symbol,
-#   color: :symbol,
-#   range: integer,
-#   weight: integer,
-#   bonus_strength: integer(optional),
-#   bonus_defense: integer(optional),
-#   bonus_accuracy: integer(optional),
-#   bonus_speed: integer(optional),
-#   bonus_health: integer(optional),
-#   bonus_mana: integer(optional),
-#   bonus_energy: integer(optional),
-#   bonus_self_regen: integer(optional)
-# })
-
-class MagicWeapon # wands
+class MagicWeapon < BaseObject # wands
   include Item
 
   attr_accessor :range, :type, :mana_usage

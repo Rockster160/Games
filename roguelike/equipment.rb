@@ -1,24 +1,7 @@
-# Equipment.new({
-#   name: 'string',
-#   icon: 'string-single character',
-#   equipment_slot: :symbol,
-#   color: :symbol,
-#   weight: integer,
-#   contains: 'String',
-#   size: integer,
-#   bonus_strength: integer(optional),
-#   bonus_defense: integer(optional),
-#   bonus_accuracy: integer(optional),
-#   bonus_speed: integer(optional),
-#   bonus_health: integer(optional),
-#   bonus_mana: integer(optional),
-#   bonus_energy: integer(optional),
-#   bonus_self_regen: integer(optional)
-# })
-
-class Equipment
+class Equipment < BaseObject
   include Item
 
+  attr_accessor :equipment_slot, :is_equipped, :bonus_strength, :bonus_defense, :bonus_accuracy, :bonus_speed, :bonus_health, :bonus_mana, :bonus_energy, :bonus_self_regen, :bonus_magic_power
   attr_accessor :contains, :size # Contains an item (Quiver contains Arrow), size is how many
 
   def self.generate

@@ -1,21 +1,9 @@
-# Spell.new({
-#   name: 'string',
-#   icon: 'string-single character',
-#   color: :symbol,
-#   destroy_on_collision_with: '',
-#   range: integer,
-#   mana_cost: integer,
-#   collided_action: 'script'
-#   is_projectile: boolean,
-#   projectile_speed: integer,
-#   non_projectile_script: 'script'
-# })
-
-class Spell
+class Spell < BaseObject
   include Item
 
-  attr_accessor :mana_cost, :range, :collided_action, :is_projectile, :projectile_speed, :non_projectile_script, :type
-
+  attr_accessor :range, :destroy_on_collision_with, :on_hit_effect, :on_hit_damage, :collided_action, :projectile_speed, :is_thrown, :ammo_type, :shoot_damage
+  attr_accessor :mana_cost, :is_projectile, :non_projectile_script, :type
+  
   def cast!(needs_verify=false)
     if needs_verify
       unless Player.inventory.select { |item| item.class == SpellBook }.map { |books| books.castable_spells }.flatten.include?(self.name)

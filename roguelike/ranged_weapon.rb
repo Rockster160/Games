@@ -1,31 +1,11 @@
-# RangedWeapon.new({
-#   name: 'string',
-#   icon: 'string-single character',
-#   color: :symbol,
-#   range: integer,
-#   thrown: boolean,
-#   weight: integer,
-#   projectile_speed: integer,
-#   collided_action: 'script',
-#   ammo_type: 'String',
-#   bonus_strength: integer(optional),
-#   bonus_defense: integer(optional),
-#   bonus_accuracy: integer(optional),
-#   bonus_speed: integer(optional),
-#   bonus_health: integer(optional),
-#   bonus_mana: integer(optional),
-#   bonus_energy: integer(optional),
-#   bonus_self_regen: integer(optional)
-# })
-
-class RangedWeapon
+class RangedWeapon < BaseObject
   include Item
 
-  attr_accessor :range, :thrown, :ammo_type, :projectile_speed, :collided_action, :shoot_damage
-  attr_accessor :mana_cost, :range
+  attr_accessor :range, :destroy_on_collision_with, :on_hit_effect, :on_hit_damage, :collided_action, :projectile_speed, :is_thrown, :ammo_type, :shoot_damage
+  attr_accessor :equipment_slot, :bonus_strength, :bonus_defense, :bonus_accuracy, :bonus_speed, :bonus_health, :bonus_mana, :bonus_energy, :bonus_self_regen, :bonus_magic_power
 
   def fire!
-    if thrown
+    if is_thrown
       Settings.ready('throw', self, self.range)
     else
       if Player.has(ammo_type)
@@ -55,7 +35,7 @@ class RangedWeapon
       range: 20,
       projectile_speed: 80,
       on_hit_damage: 3,
-      thrown: true,
+      is_thrown: true,
       weight: 0.3,
       description: "This is an arrow"
     })
@@ -69,7 +49,7 @@ class RangedWeapon
       color: :white,
       range: 10,
       shoot_damage: 5,
-      thrown: false,
+      is_thrown: false,
       weight: 3
     })
   end

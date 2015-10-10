@@ -119,6 +119,8 @@ require './settings.rb'
 require './dungeon.rb'
 require './visible.rb'
 
+binding.pry
+
 seed = 40.times.map {|a| (rand_seed ||= Random.new_seed.to_s)[a] ? rand_seed[a] : 1}.join.to_i
 Game.start(seed)
 

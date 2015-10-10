@@ -36,17 +36,6 @@ class Player
     leggings: nil,
     feet: nil
   }
-  @@bonus_stats = {
-    max_health: 0,
-    max_mana: 0,
-    max_energy: 0,
-    magic_power: 0,
-    accuracy: 0,
-    defense: 0,
-    strength: 0,
-    speed: 0,
-    self_regen: 0
-  }
   @@raw_accuracy = 90
   @@raw_max_health = 7
   @@health = 7
@@ -400,15 +389,15 @@ class Player
     bonus = {}
     equipped.each do |location, equipment|
       if equipment
-        bonus[:strength] = bonus_stats[:strength].to_i + equipment.bonus_strength.to_i
-        bonus[:magic_power] = bonus_stats[:magic_power].to_i + equipment.bonus_magic_power.to_i
-        bonus[:defense] = bonus_stats[:defense].to_i + equipment.bonus_defense.to_i
-        bonus[:accuracy] = bonus_stats[:accuracy].to_i + equipment.bonus_accuracy.to_i
-        bonus[:speed] = bonus_stats[:speed].to_i + equipment.bonus_speed.to_i
-        bonus[:max_health] = bonus_stats[:health].to_i + equipment.bonus_health.to_i
-        bonus[:max_mana] = bonus_stats[:mana].to_i + equipment.bonus_mana.to_i
-        bonus[:max_energy] = bonus_stats[:energy].to_i + equipment.bonus_energy.to_i
-        bonus[:self_regen] = bonus_stats[:self_regen].to_i + equipment.bonus_self_regen.to_i
+        bonus[:strength] ||= 0; bonus[:strength] += equipment.bonus_strength.to_i
+        bonus[:magic_power] ||= 0; bonus[:magic_power] += equipment.bonus_magic_power.to_i
+        bonus[:defense] ||= 0; bonus[:defense] += equipment.bonus_defense.to_i
+        bonus[:accuracy] ||= 0; bonus[:accuracy] += equipment.bonus_accuracy.to_i
+        bonus[:speed] ||= 0; bonus[:speed] += equipment.bonus_speed.to_i
+        bonus[:max_health] ||= 0; bonus[:max_health] += equipment.bonus_health.to_i
+        bonus[:max_mana] ||= 0; bonus[:max_mana] += equipment.bonus_mana.to_i
+        bonus[:max_energy] ||= 0; bonus[:max_energy] += equipment.bonus_energy.to_i
+        bonus[:self_regen] ||= 0; bonus[:self_regen] += equipment.bonus_self_regen.to_i
       end
     end
     bonus
