@@ -385,6 +385,16 @@ class Player
   def self.max_energy; raw_max_energy + bonuses[:max_energy].to_i; end
   def self.self_regen; raw_self_regen + bonuses[:self_regen].to_i; end
 
+  def self.bonus(stat)
+    bonus_stat = 0
+    equipped.each do |location, equipment|
+      if equipment
+        bonus_stat += equipment.method("bonus_#{stat.to_s}".to_sym).call
+      end
+    end
+    bonus_stat
+  end
+
   def self.bonuses
     bonus = {}
     equipped.each do |location, equipment|

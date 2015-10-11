@@ -1,6 +1,8 @@
 # TODO
 =begin
 
+Do not need to save after every change! Only persist things in the database when necessary.
+
 Add torches
   Torches can be made/found/purchased and can be placed to create areas of light. Lit areas allow the player to see anything in that area if within the Player's vision radius
   Torches should update their current lighting if a solid object is modified within range
