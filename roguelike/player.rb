@@ -375,42 +375,24 @@ class Player
     end
   end
 
-  def self.strength; raw_strength + bonuses[:strength].to_i; end
-  def self.magic_power; raw_magic_power + bonuses[:magic_power].to_i; end
-  def self.defense; raw_defense + bonuses[:defense].to_i; end
-  def self.accuracy; raw_accuracy + bonuses[:accuracy].to_i; end
-  def self.speed; (raw_speed + bonuses[:speed].to_i) / (energy > 0 ? 1 : 2); end
-  def self.max_health; raw_max_health + bonuses[:max_health].to_i; end
-  def self.max_mana; raw_max_mana + bonuses[:max_mana].to_i; end
-  def self.max_energy; raw_max_energy + bonuses[:max_energy].to_i; end
-  def self.self_regen; raw_self_regen + bonuses[:self_regen].to_i; end
+  def self.strength; raw_strength + bonus(:strength); end
+  def self.magic_power; raw_magic_power + bonus(:magic_power); end
+  def self.defense; raw_defense + bonus(:defense); end
+  def self.accuracy; raw_accuracy + bonus(:accuracy); end
+  def self.speed; (raw_speed + bonus(:speed)) / (energy > 0 ? 1 : 2); end
+  def self.max_health; raw_max_health + bonus(:health); end
+  def self.max_mana; raw_max_mana + bonus(:mana); end
+  def self.max_energy; raw_max_energy + bonus(:energy); end
+  def self.self_regen; raw_self_regen + bonus(:self_regen); end
 
   def self.bonus(stat)
     bonus_stat = 0
     equipped.each do |location, equipment|
       if equipment
-        bonus_stat += equipment.method("bonus_#{stat.to_s}".to_sym).call
+        bonus_stat += equipment.method("bonus_#{stat.to_s}".to_sym).call.to_i
       end
     end
     bonus_stat
-  end
-
-  def self.bonuses
-    bonus = {}
-    equipped.each do |location, equipment|
-      if equipment
-        bonus[:strength] ||= 0; bonus[:strength] += equipment.bonus_strength.to_i
-        bonus[:magic_power] ||= 0; bonus[:magic_power] += equipment.bonus_magic_power.to_i
-        bonus[:defense] ||= 0; bonus[:defense] += equipment.bonus_defense.to_i
-        bonus[:accuracy] ||= 0; bonus[:accuracy] += equipment.bonus_accuracy.to_i
-        bonus[:speed] ||= 0; bonus[:speed] += equipment.bonus_speed.to_i
-        bonus[:max_health] ||= 0; bonus[:max_health] += equipment.bonus_health.to_i
-        bonus[:max_mana] ||= 0; bonus[:max_mana] += equipment.bonus_mana.to_i
-        bonus[:max_energy] ||= 0; bonus[:max_energy] += equipment.bonus_energy.to_i
-        bonus[:self_regen] ||= 0; bonus[:self_regen] += equipment.bonus_self_regen.to_i
-      end
-    end
-    bonus
   end
 
   def self.has(item)
