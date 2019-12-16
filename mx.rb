@@ -136,6 +136,7 @@ class MxGrid
   end
 end
 
+full_t = Time.now.to_f
 rules = MxGrid.brute_force_match([
   %w(1 0 0 0 0 0 0 0),
   %w(1 0 1 1 1 1 1 1),
@@ -161,3 +162,4 @@ puzzles.each do |puzzle|
   solution = MxGrid.solve(puzzle, rules)
   puts "#{puzzle} = #{solution} -- #{(Time.now.to_f - t).round(3)}s"
 end
+puts "Total Duration: #{(Time.now.to_f - full_t).round(3)}s"
