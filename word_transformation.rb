@@ -1,4 +1,4 @@
-require 'pry-remote'
+# require 'pry-remote'
 
 class Dictionary
   class << self
@@ -211,7 +211,9 @@ if Object.const_defined?("RSpec")
       end
     end
   end
-  
+
+elsif ARGV.count == 2
+  WordTree.words_between(ARGV[0], ARGV[1])
 else
   binding.pry
 end
