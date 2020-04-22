@@ -162,4 +162,4 @@ puzzles.each do |puzzle|
   solution = MxGrid.solve(puzzle, rules)
   puts "#{puzzle} = #{solution} -- #{(Time.now.to_f - t).round(3)}s"
 end
-puts "Total Duration: #{(Time.now.to_f - full_t).round(3)}s"
+"Total Duration: #{(Time.now.to_f - full_t).round(3)}s"
