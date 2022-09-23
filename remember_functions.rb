@@ -1,4 +1,3 @@
-
 class Tools
   class << self
     def inspect
@@ -25,7 +24,7 @@ class Tools
     def count_each(arr)
       arr.each_with_object(Hash.new(0)) { |instance, count_hash| count_hash[instance] += 1 }
     end
-    # %w( a a a b c b b a a c ).each_with_object(Hash.new(0)) { |instance, count_hash| count_hash[instance] += 1 }
+    # count_each(%w( a a a b c b b a a c ))
     #=> {"a"=>5, "b"=>3, "c"=>2}
 
     # Count the number of months between 2 dates
@@ -35,6 +34,40 @@ class Tools
       (date2.year - date1.year) * 12 + date2.month - date1.month - (date2.day >= date1.day ? 0 : 1)
     end
     #=> 5
+
+    def to_dot(hash)
+      JSON.parse(hash.to_json, object_class: OpenStruct)
+    end
+
+    # Get all of the keys in a hash
+    def branches(hash)
+      return unless hash.is_a?(Hash)
+      return hash.keys if hash.none? { |k, v| v.is_a?(Hash) }
+
+      hash.map do |k, v|
+        split_branches = branches(v)
+
+        if split_branches.is_a?(Array)
+          split_branches.compact.map { |branch| [k, branch].join(".") }
+        else
+          k
+        end
+      end.flatten.compact
+    end
+    # hash.map do |(k, v)|
+    #   if v.is_a?(Hash)
+    #     {k => branches(v, parents + [k])}
+    #   else
+    #     k
+    #   end
+    # end
+    # { a: nil, b: [1, 2, 3], c: { e: :f, g: [:a2, :b2, :c2], h: {a3: 1, b3: 2, c3: 3} }, d: 1 }
+    # [:a, :b, "c.e", "c.g", "c.h.a3", "c.h.b3", "c.h.c3", :d]
+
+    # Get the accessible methods of an object/class
+    def methods(obj)
+      obj.methods - Object.methods
+    end
 
     # Measure how long a block of code takes
     def measure_block(&block)
