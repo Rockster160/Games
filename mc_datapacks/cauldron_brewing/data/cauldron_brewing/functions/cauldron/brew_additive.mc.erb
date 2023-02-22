@@ -1,0 +1,18 @@
+execute at @s run tag @e[type=item,tag=!nobrew,distance=..0.5,sort=nearest] add brewitem
+
+# Two calls for each item so we know if we should show the brew animation
+<%= add_recipe tag: "!strong_potion", ing: :redstone,             effect: :long_potion                        %>
+<%= add_recipe tag: "!long_potion",   ing: :glowstone_dust,       effect: :strong_potion                      %>
+<%= add_recipe tag: :swiftness,       ing: :fermented_spider_eye, effect: :slowness,     remove: :swiftness   %>
+<%= add_recipe tag: :leaping,         ing: :fermented_spider_eye, effect: :slowness,     remove: :leaping     %>
+<%= add_recipe tag: :poison,          ing: :fermented_spider_eye, effect: :harming,      remove: :poison      %>
+<%= add_recipe tag: :healing,         ing: :fermented_spider_eye, effect: :harming,      remove: :healing     %>
+<%= add_recipe tag: :nightVision,     ing: :fermented_spider_eye, effect: :invisibility, remove: :nightVision %>
+# If the addition was not permitted, the potion is ruined - revert to mundane
+execute at @s if entity @s[tag=!successful_brew] run tag @s add mundane
+
+# Boil the item, regardless of it was accepted or not
+execute at @s run kill @e[tag=brewitem,sort=nearest,limit=1]
+
+# Show extra bubbles for the new item being accepted
+tag @s add bubble

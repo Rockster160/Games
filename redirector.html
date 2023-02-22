@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <body>
+  </body>
+  <script type="text/javascript">
+    function toParams(url, method) {
+      let params = new URLSearchParams()
+      params.append("redirect", url)
+      params.append("method", method || "POST")
+
+      return params.toString()
+    }
+    // toParams("http://localhost:3000/users/1961/impersonate", "patch")
+    // redirect=http%3A%2F%2Flocalhost%3A3000%2Fusers%2F1961%2Fimpersonate&method=patch
+
+    function encode(component) {
+      return encodeURIComponent((component + "").replace(/\+/g, "%20"))
+    }
+
+    function decode(component) {
+      return decodeURIComponent((component + "").replace(/\+/g, "%20"))
+    }
+
+    function paramsToObj() {
+      url = decodeURI(location.search)
+      if (typeof url === "string") {
+        let params = url.split("?")
+        let eachParamsArr = params[1].split("&")
+        let obj = {}
+        if (eachParamsArr && eachParamsArr.length) {
+          eachParamsArr.map(param => {
+            let keyValuePair = param.split("=")
+            let key = keyValuePair[0]
+            let value = decode(keyValuePair[1])
+            obj[key] = value
+          })
+        }
+        return obj
+      }
+    }
+
+    function redirect(url, method) {
+      var form = document.createElement("form")
+
+      form.method = method || "POST"
+      form.action = url
+
+      document.body.appendChild(form)
+
+      form.submit()
+    }
+
+    var params = paramsToObj()
+    redirect(params.redirect, params.method)
+  </script>
+</html>

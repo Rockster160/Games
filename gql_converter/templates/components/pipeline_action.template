@@ -1,0 +1,10 @@
+def index params, current_user
+  raise ::API::UnauthorizedError unless current_user.can? :{{action}}, ::{{constant}}
+
+  {{plural_resource}} = ::Web::{{constant}}Finder.call params, current_user
+
+  ::Web::{{constant}}Serializer.new(
+    {{plural_resource}},
+    params.permit(:page, :per_page, :meta, :errors),
+  )
+end

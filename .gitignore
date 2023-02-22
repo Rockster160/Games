@@ -7,3 +7,12 @@ Saves/.DS_Store
 portfolio
 .DS_Store
 /google_sheets/*
+local_data.json
+*.tmp.*
+awesome_print-1.9.2/*
+car
+dashboard_automations/*.json
+textual
+comcast_data_scraper.rb
+page_login.rb
+scraper.rb

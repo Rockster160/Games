@@ -16,11 +16,13 @@ def normal_distribution(min, max, height)
 end
 # Normal "bell curve" distribution
 
-def normal_dist_with_bias(min, max, bias, weight: 1)
+def normal_dist_with_bias(min, max, bias, weight=1)
   weighted_values = weight.times.map { rand * (max - min) + min }
   norm = weighted_values.min_by { |val| (val - bias).abs }
   mix = rand
-  (norm * (1 - mix) + bias * mix).round
+  puts "\e[33m[LOGIT]#[#{weighted_values.map {|v|v.round(2)}.join(', ')}] min(#{norm.round(2)}) mix(#{mix.round(2)})\e[0m"
+  puts "\e[33m[LOGIT]#((#{norm.round(2)} * (1 - #{mix.round(2)})) + (#{bias.round(2)} * #{mix.round(2)})).round\e[0m"
+  ((norm * (1 - mix)) + (bias * mix)).round
 end
 # Normal distribution between numbers- but the crest is at the bias point
 # normal_dist_with_bias(1, answer_count, answer_count, weight: 4)
@@ -40,7 +42,7 @@ end
 def draw_svg(scores)
   points = scores.each_with_object(Hash.new(0)) { |score,score_count| score_count[score] += 1 }
   points = points.sort_by { |point_key, point_count| point_count }.reverse
-  print_vals(points.reverse)
+  print_vals(points)
   min_score = points.map {|s,c|s}.min
   max_score = points.map {|s,c|s}.max
   max_count = points.map {|s,c|c}.max
@@ -64,7 +66,7 @@ end
 # scores = svg_from_rand(200, :normal_dist_with_bias, 1, 10, 10, weight: 4)
 # scores = svg_from_rand(10000, :linear_skewed_distribution, 0, 100)
 # scores = svg_from_rand(100, :linear_skewed_distribution, 1, 10)
-scores = svg_from_rand(1000, :normal_dist_with_bias, 1, 4, 1, weight: 1)
+scores = svg_from_rand(1000, :normal_dist_with_bias, 0, 100, 70, 3)
 # draw_svg(ARGV.join(",").split(",").map(&:to_i))
 # binding.pry
 # puts ARGV#.join(",").split(",").map(&:to_i)

@@ -1,0 +1,113 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      td {
+        font-size: 24pt;
+        height: 1.5em;
+        width: 1.5em;
+        border: 1px solid black;
+        text-align: center;
+        background-color: rgb(153, 153, 153);
+      }
+      .light {
+        background-color: rgb(255, 255, 255);
+      }
+      .dark {
+        background-color: rgb(153, 153, 153);
+      }
+    </style>
+  </head>
+  <body>
+    <label for="size">Size</label>
+    <input id="size" type="text" />
+    <td colspan="3" id="contain">
+      <table>
+        <tbody></tbody>
+      </table>
+    </td>
+    <script>
+      let size = 4;
+      document.getElementById('size').addEventListener('change', e => {
+        size = parseInt(e.target.value) - 1;
+        initElements();
+        initializeBoard();
+      });
+      initElements();
+      initializeBoard();
+
+      function initializeBoard() {
+        const randomCells = getRandomClickCells();
+        randomCells.forEach((row, rIndex) => {
+          row.forEach((cell, cIndex) => {
+            if (cell) {
+              click(`${rIndex}-${cIndex}`);
+            }
+          });
+        });
+      }
+
+      function addEventListeners() {
+        document.querySelectorAll('td').forEach(td =>
+          td.addEventListener('click', e => {
+            click(e.target.id);
+          })
+        );
+      }
+
+      function initElements() {
+        document.querySelector('tbody').innerHTML = '';
+        for (let i = 0; i <= size; i++) {
+          const rowEl = document.createElement('tr');
+          document.querySelector('tbody').appendChild(rowEl);
+          for (let y = 0; y <= size; y++) {
+            const cellEl = document.createElement('td');
+            cellEl.id = `${i}-${y}`;
+            rowEl.appendChild(cellEl);
+          }
+        }
+        addEventListeners();
+      }
+
+      function getRandomClickCells() {
+        const matrix = [];
+        for (let i = 0; i <= size; i++) {
+          matrix[i] = [];
+          for (let y = 0; y <= size; y++) {
+            matrix[i][y] = Math.floor(Math.random() * 2);
+          }
+        }
+        return matrix;
+      }
+
+      function click(cellId) {
+        const [row, column] = cellId.split('-').map(i => parseInt(i));
+
+        const cellsToFlip = [
+          cellId,
+          column < size ? `${row}-${column + 1}` : null,
+          column > 0 ? `${row}-${column - 1}` : null,
+          row < size ? `${row + 1}-${column}` : null,
+          row > 0 ? `${row - 1}-${column}` : null,
+        ];
+
+        cellsToFlip.forEach(cell => {
+          if (cell) {
+            document.getElementById(cell).classList.toggle('light');
+            setTimeout(() => detectWin(), 0);
+          }
+        });
+      }
+
+      function detectWin() {
+        const el = document.querySelector('.light');
+        if (!el) {
+          alert('Winner Winner Chicken Dinner!!!! 🐔');
+        }
+      }
+    </script>
+  </body>
+</html>

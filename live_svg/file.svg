@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -72.8438334722347 152.1358735234461 92.8438334722347" fill="transparent" stroke="black" font-family="monospace">
+  <text font-size="5" stroke="none" fill="#0160FF" text-anchor="end" x="-2" y="2">
+    A 31.9°
+  </text>
+  <text font-size="5" stroke="none" fill="#0160FF" text-anchor="start" x="90.51652114318013" y="-26.421916736117357">
+    a 130.25
+  </text>
+  <line stroke="#0160FF" stroke-width="0.5" x1="84.89716876291415" y1="-52.843833472234714" x2="92.13587352344611" y2="0" />
+  <text font-size="5" stroke="none" fill="green" text-anchor="middle" x="84.89716876291415" y="-54.843833472234714">
+    B 65.9°
+  </text>
+  <text font-size="5" stroke="none" fill="green" text-anchor="middle" x="46.067936761723054" y="6">
+    b 225.0
+  </text>
+  <line stroke="green" stroke-width="0.5" x1="0" y1="0" x2="92.13587352344611" y2="0" />
+  <text font-size="5" stroke="none" fill="orange" text-anchor="start" x="94.13587352344611" y="2">
+    C 82.2°
+  </text>
+  <text font-size="5" stroke="none" fill="orange" text-anchor="end" x="40.448584381457074" y="-26.421916736117357">
+    c 244.2
+  </text>
+  <line stroke="orange" stroke-width="0.5" x1="0" y1="0" x2="84.89716876291415" y2="-52.843833472234714" />
+  <circle fill="#0160FF" stroke="none" cx="0" cy="0" r="1" />
+  <circle fill="green" stroke="none" cx="84.89716876291415" cy="-52.843833472234714" r="1" />
+  <circle fill="orange" stroke="none" cx="92.13587352344611" cy="0" r="1" />
+  <rect stroke="blue" stroke-width="0.1" x="-30" y="-72.8438334722347" width="152.1358735234461" height="92.8438334722347" />
+</svg>

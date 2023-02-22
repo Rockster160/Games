@@ -1,0 +1,24 @@
+# Used colors from the below site to get the same/similar particle colors as the potions while applied.
+# https://minecraft.fandom.com/wiki/Category:Effects
+
+# particle minecraft:dust <r> <g> <b> <count> <x> <y> <z> <spreadx> <spready> <spreadz> <speed?> <count>
+# * <r> is the "red" component of the particle color. This is RGB based, but scaled to 0..1
+# * <g> is the "green" component of the particle color. This is RGB based, but scaled to 0..1
+# * <b> is the "blue" component of the particle color. This is RGB based, but scaled to 0..1
+
+# water / plain
+# Hex: #385DC6
+# RGB: 56 93 198
+# RGB1: 0.22 0.36 0.77
+# Don't show dust effects, only show bubbling for plain water
+<% potion_list.each do |potion| %><%
+  next if [:plain, :mundane, :thick].include?(potion.key)
+%>
+# <%= potion.title %>
+# Hex: <%= potion.hex %>
+# RGB: <%= potion.rgb.join(" ") %>
+# RGB1: <%= potion.rgb_dec.join(" ") %>
+execute at <%= E.tag(:cauldron, potion.key) %> run particle minecraft:dust <%= potion.rgb_dec.join(" ") %> 1 ~ ~0.4 ~ 0.18 0 0.18 0 4
+<% end %>
+# Schedule function to run again after 5 ticks
+schedule function cauldron_brewing:particles/cauldron_effect 8t

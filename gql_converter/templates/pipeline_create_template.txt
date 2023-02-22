@@ -1,0 +1,8 @@
+def create params, current_user
+  {{resource}} = ::{{constant}}.new params
+  raise ::API::UnauthorizedError unless current_user.can? :create, {{resource}}
+
+  {{resource}}.save!
+
+  ::Web::{{constant}}Serializer.new {{resource}}
+end

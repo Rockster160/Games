@@ -78,7 +78,7 @@ Dir["./*"].inject(0) {|count, path| count + %x{wc -l < "#{path}"}.to_i}
 
 =end
 
-# require 'pry-remote' # TODO Remove this!
+# require 'pry-rails' # TODO Remove this!
 
 require 'io/console'
 require './monkey_patches.rb'

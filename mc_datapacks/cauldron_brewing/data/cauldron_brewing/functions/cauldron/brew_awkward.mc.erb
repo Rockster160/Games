@@ -1,0 +1,30 @@
+execute at @s run tag <%= E.item.tag("!nobrew").closest(0.5) %> add brewitem
+
+# Two calls for each item so we know if we should show the brew animation
+<%= add_recipe ing: :sugar,                  effect: :swiftness %>
+<%= add_recipe ing: :rabbit_foot,            effect: :luck %>
+<%= add_recipe ing: :slime_ball,             effect: :leaping %>
+<%= add_recipe ing: :blaze_powder,           effect: :strength %>
+<%= add_recipe ing: :glistering_melon_slice, effect: :healing %>
+<%= add_recipe ing: :spider_eye,             effect: :poison %>
+<%= add_recipe ing: :ghast_tear,             effect: :regeneration %>
+<%= add_recipe ing: :magma_cream,            effect: :fireResistance %>
+<%= add_recipe ing: :pufferfish,             effect: :waterBreathing %>
+<%= add_recipe ing: :golden_carrot,          effect: :nightVision %>
+<%= add_recipe ing: :turtle_helmet,          effect: :turtleMaster %>
+<%= add_recipe ing: :phantom_membrane,       effect: :slowFalling %>
+
+# Add `potion` tag, showing that the potion is ready for collection
+execute at @s if entity @s[tag=successful_brew] run tag @s add potion
+
+# If the addition was not permitted, the potion is ruined - revert to mundane
+execute at @s if entity @s[tag=!successful_brew] run tag @s add mundane
+
+# Remove `awkward` since the potion has changed
+tag @s remove awkward
+
+# Boil the item, regardless of it was accepted or not
+execute at @s run kill @e[tag=brewitem,sort=nearest,limit=1]
+
+# Show extra bubbles for the new item being accepted
+tag @s add bubble

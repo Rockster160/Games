@@ -1,0 +1,45 @@
+
+# frozen_string_literal: true
+
+RSpec.describe "[DELETE] /web/{{plural_resource}}/:id", type: :request do
+  let(:path) { "/web/{{plural_resource}}/#{{{resource}}.id}" }
+  let(:admin) { FactoryBot.create :user, :with_role, role_name: :administrator }
+  let(:unauthed_user) { FactoryBot.create :user, :with_role, role_name: :customer_manager }
+
+  let(:{{resource}}) { FactoryBot.create :{{resource}} }
+
+  context "when authorized" do
+    before do
+      sign_in admin
+    end
+
+    it "successfully destroys" do
+      delete path
+
+      expect(response).to be_successful
+      expect(json[:data]).to be_empty
+      expect({{resource}}.reload).to be_deleted_at
+    end
+  end
+
+  context "when not authorized" do
+    before do
+      sign_in unauthed_user
+    end
+
+    it "fails to destroy" do
+      delete path
+
+      expect(response).not_to be_successful
+      expect(json.dig(:errors)).to include "unauthorized"
+    end
+  end
+
+  context "when not logged in" do
+    it "fails to destroy" do
+      delete path
+
+      expect(response).not_to be_successful
+    end
+  end
+end

@@ -1,0 +1,12 @@
+class {{resource_pascal}}Controller < {{namespacing_pascal}}::BaseController
+  private
+
+  def index_params
+    params.permit :page, :per_page
+  end
+
+  def {{resource_snake}}_params
+    params.require(:{{resource_snake}}).permit(
+    )
+  end
+end

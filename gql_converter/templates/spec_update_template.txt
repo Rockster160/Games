@@ -1,0 +1,46 @@
+# frozen_string_literal: true
+
+RSpec.describe "[PATCH] /web/{{plural_resource}}/:id", type: :request do
+  let(:path) { "/web/{{plural_resource}}/#{{{resource}}.id}" }
+  let(:admin) { ::FactoryBot.create :user, :with_role, role_name: :administrator }
+
+  let(:{{resource}}) { ::FactoryBot.create :{{resource}} }
+  let(:changed_name) { "Updated {{resource}} name" }
+
+  context "when authorized" do
+    before do
+      sign_in admin
+    end
+
+    let(:params) {
+      {
+        {{resource}}: {
+          name: changed_name,
+        },
+      }
+    }
+
+    it "successfully creates" do
+      patch path, params: params
+
+      expect(response).to be_successful
+      expect(json.dig(:data, :name)).to eq changed_name
+    end
+  end
+
+  context "when not authorized" do
+    let(:params) {
+      {
+        {{resource}}: {
+          name: changed_name,
+        },
+      }
+    }
+
+    it "fails to create" do
+      patch path, params: params
+
+      expect(response).not_to be_successful
+    end
+  end
+end

@@ -1,0 +1,3 @@
+def {{action}}
+  render json: {{namespacing_pascal}}::{{resource_pascal}}Pipeline.{{action}}{{args}}
+end

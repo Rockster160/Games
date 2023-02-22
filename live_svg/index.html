@@ -1,0 +1,36 @@
+<!--
+  run with `live-server /Users/rocco/code/games/live_svg`
+
+  Run including the ruby file watcher
+  svgwatcher /Users/rocco/code/games/triangle_solver/triangle.rb
+ -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style media="screen">
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+      * { box-sizing: border-box; }
+      body {
+        padding: 50px;
+        background: repeating-conic-gradient(#E0E0E0 0% 25%, #EAEAEA 0% 50%) 50% / 80px 80px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      object {
+        max-height: 100%;
+        max-width: 100%;
+        border: 1px solid pink;
+      }
+    </style>
+  </head>
+  <body>
+    <object id="svg-object" data="file.svg" type="image/svg+xml"></object>
+  </body>
+</html>

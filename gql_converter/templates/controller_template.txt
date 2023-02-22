@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+module Web
+  class {{plural_constant}}Controller < ::Web::BaseController
+    private
+
+    def {{resource}}_params
+      params.require(:{{resource}}).permit(
+      )
+    end
+  end
+end

@@ -1,0 +1,4 @@
+ActiveSupport::Deprecation.warn(
+  "GraphQL is deprecated.\n" \
+  "Use `[{{action}}] web/#{{plural_resource}}/:id` instead.\n#{caller.last}",
+)

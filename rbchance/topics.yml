@@ -1,0 +1,72 @@
+# Random generation - Deck of Cards + Dealing + Poker
+# Tool - Multiple steps to put it all together - Color Fader
+
+# k=kyu, h=hours
+Random Generator
+  JSChance
+  # Deck of Cards
+  # D&D Dice Roller / Dice Notation Parser
+  Terrain Generation (Perlin Noise, wave function collapse)
+  AutomataCave
+Mini Game
+  Snake
+  Hangman
+  Towers of Hanoi
+  Tic-Tac-Toe
+  Wordle / MasterMind + Solver
+  # Turkey Chaser
+  # Lights Out
+  5 Card Draw / Texas Hold'em
+  Chess
+  Pacman
+  Tetris
+  GoL
+  Mover Puzzle / Boxes
+  Maze game # Can only see two cells each direction- must solve maze
+Math
+  Make Currency Change
+  FourIsMagic
+  Kaprekar's Constant
+  Generate cardinal line on a grid
+  Mixed Numbers
+  Maze Solver
+  Roman Numeral parse to/from
+  Bowling Score
+  Scale/map
+  Weighted Number generation
+  Algorithms
+    # Triangle
+    Lumber Spacer
+    Normal Distribution
+    Gold's Formula
+    Compound Interest
+    Recency Bias
+    AI Stuff?
+Parser
+  JSON (And JSON+) + Colorize
+  YML (And YML+)
+  Words to Integer
+Function
+  Cipher
+    Text/Morse
+  Word Reverse
+Tool
+  Breadboard
+  Paint (HTML or terminal?)
+  # Boolean Truth Table generator
+  # Set bitwise flags
+  Web Scraper
+  Hash Branches
+  Color Fade
+  Colorize (Terminal)
+  Color Mapper # (multi-part: Normalize hex/rgb into color obj, fade from one color to another, then use temperature mapping to map color to temp)
+  Pathfinding
+Generator
+  ASCII Table
+  # SVG
+  Anonicon
+  Maze
+Etc
+  Meta Programming?
+  Custom Language
+  Custom DB/ORM

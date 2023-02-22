@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style media="screen">
+      * { text-align: center; }
+      .square {
+        background: black;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="square"></div>
+    <input type="text" name="dec" value="0 0 0">
+    <input type="text" name="rgb" value="0 0 0">
+    <input type="text" name="hex" value="000000">
+  </body>
+  <script type="text/javascript">
+    // function LittleWorld() {
+    //   this.players = []
+    //   this.blockWidth = $(".block").width()
+    //   this.blockHeight = $(".block").height()
+    //   this.boardWidth = parseInt($(".little-world-wrapper").attr("data-world-width"))
+    //   this.boardHeight = parseInt($(".little-world-wrapper").attr("data-world-height"))
+    // }
+    //
+    // LittleWorld.prototype.connected = function() {
+    //   this.loadOnlinePlayers()
+    //   $(".connection-error-status").animate({"top": -50 - $(".connection-error-status").height()})
+    // }
+    // Player.tick = function() {
+    //   $(Player.sleepingPlayers()).each(function() {
+    //     this.goToSleep()
+    //   })
+    //   $(littleWorldPlayers).each(function() {
+    //     this.tick()
+    //   })
+    // }
+    function Color(init_opts) {
+      this.rgb = Color.parseRGB(init_opts.rgb)
+      this.hex = Color.parseHex(init_opts.hex)
+      this.dec = Color.parseDec(init_opts.dec)
+
+      this.fulfillMissing()
+    }
+    Color.parseRGB = function(rgb) {
+      if (!rgb) { return undefined }
+
+      return rgb.split(" ").map(function(color) {
+        return Math.round(parseFloat(color))
+      })
+    }
+    Color.parseHex = function(hex) {
+      if (!hex) { return undefined }
+
+      return hex.toUpperCase().match(/.{2}/g)
+    }
+    Color.parseDec = function(dec) {
+      if (!dec) { return undefined }
+
+      return dec.split(" ").map(function(color) {
+        return Math.round((parseFloat(color) * 10)) / 10
+      })
+    }
+    Color.prototype.fulfillMissing = function() {
+      this.findRGB()
+      this.fulfillHex()
+      this.fulfillDec()
+    }
+    Color.prototype.findRGB = function() {
+      if (this.rgb) { return }
+
+      if (this.hex) {
+        this.rgb = this.hex.map(function(hexc) {
+          return hexc.toInteger(16)
+        })
+      } else if (this.dec) {
+        this.rgb = this.dec.map(function(decc) {
+          return Math.round(decc * 256)
+        })
+      }
+    }
+    Color.prototype.fulfillHex = function() {
+      if (this.hex) { return }
+
+      this.hex = this.rgb.map(function(rgbc) {
+        return rgbc.toString(16).toUpperCase().padStart(2, "0")
+      })
+    }
+    Color.prototype.fulfillDec = function() {
+      if (this.dec) { return }
+
+      this.dec = this.rgb.map(function(rgbc) {
+        return Math.round((rgbc / 256) * 10) / 10
+      })
+    }
+
+    function updateColor(evt) {
+      var color = undefined
+      const target = evt.currentTarget
+      const val = target.value.replace(/\s+/g, " ").trim()
+
+      if (target.name == "dec") {
+        color = new Color({dec: target.value})
+      } else if (target.name == "hex") {
+        color = new Color({hex: target.value})
+      } else if (target.name == "rgb") {
+        color = new Color({rgb: target.value})
+      }
+
+      $(".square").css({ background: `rgb(${color.rgb.join(", ")})` })
+      $("input[name=dec]").val(color.dec.join(" "))
+      $("input[name=rgb]").val(color.rgb.join(" "))
+      $("input[name=hex]").val(color.hex.join(""))
+    }
+
+    $("input").blur(updateColor).keypress(function(evt) { if (evt.key == "Enter" ) { updateColor(evt) }})
+  </script>
+</html>

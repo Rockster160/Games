@@ -1,0 +1,23 @@
+// osascript -l JavaScript /Users/rocco/code/games/dashboard_automations/reminders_data.jxa
+
+var app = Application('Reminders')
+
+// console.log(app.lists.name().join("\n"))
+// console.log(app.lists.byName("Reminders").reminders.name().join("\n"))
+
+var reminders = app.lists.byName("Reminders").reminders
+
+var list_names = reminders.name()
+var list_completed = reminders.completed()
+var list_due = reminders.dueDate()
+var list_notes = reminders.body()
+
+var list = []
+list_names.forEach(function(name, idx) {
+  if (list_completed[idx]) { return } // Only include completed
+
+  list.push({ name: name, due: list_due[idx], notes: list_notes[idx] })
+})
+list.sort(function(a, b) { return a.due > b.due })
+
+console.log(JSON.stringify(list))

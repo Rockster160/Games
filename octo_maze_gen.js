@@ -15,6 +15,14 @@ let sample = function(arr) {
   return arr[rand(arr.length)]
 }
 
+let hexToBin = function(hex) { // Hex string
+  return parseInt(hex, 16).toString(2).padStart(4, "0")
+}
+
+let binToHex = function(bin) { // Binary string
+  return parseInt(bin, 2).toString(16)
+}
+
 class Cell {
   static base = 16
 
@@ -56,7 +64,7 @@ class Cell {
   }
 
   toHex() {
-    return this.hex = parseInt(this.toBinary(), 2).toString(16)
+    return this.hex = binToHex(this.toBinary())
   }
 }
 
@@ -92,11 +100,6 @@ class Algorithm {
       // Always add a branch when the cell is selected
       if (cell.neighbors() < 4 && cell[dir]) {
         this.genCell(dungeon, cell)
-        // I would expect the below to work instead of recursive calling, but it throws a weird err
-        // while (cell[dir]) {
-        //   dir = sample(Object.keys(Algorithm.DIRS))
-        //   [x, y] = Algorithm.DIRS[new_dir]
-        // }
       }
     }
     // Skip recalculations if the branch already exists
@@ -117,6 +120,7 @@ class Dungeon {
     this.cell_count = cell_count
     this.cells = []
     this.branches = opts.branches || "high" // "low", "med", "high"
+    this.generate()
   }
 
   generate() {
@@ -219,8 +223,7 @@ class Dungeon {
 
         // View what the hex value is for the center
         // map[center_y][center_x] = cell_hex
-        let cell_binary = parseInt(cell_hex, 16).toString(2).padStart(4, "0")
-        let [n, e, s, w] = cell_binary.split("").map(function(char) { return char == "1" })
+        let [n, e, s, w] = hexToBin(cell_hex).split("").map(function(char) { return char == "1" })
         // Bridges
         if (n) { map[center_y - half_cell][center_x] = "#" }
         if (e) { map[center_y][center_x + half_cell] = "#" }
@@ -244,5 +247,6 @@ class Dungeon {
 }
 
 let dungeon = new Dungeon(6)
+console.log(dungeon.cells);
 console.log(dungeon.toHex().map(function(row) { return row.join(" ") }).join("\n"));
 console.log(dungeon.toCells().map(function(row) { return row.join(" ") }).join("\n"));

@@ -1,0 +1,48 @@
+# TODO:
+# (1-5) - 1 to 5, inclusive
+# (1) - 0-1, with decimal
+# (5) - 1-5, inclusive
+# Weighted values:
+#   ice cave^2 is twice as likely as all of the other options
+#   ice cave^0.2 is 1/5 as likely
+# vv Maybe?
+# [this|that|other], inline list - choose a random
+# [[this|that|other]], inline list that calls the function for the returned value
+
+animal
+  cow
+  bat^0.2
+  sheep
+
+landtype
+  natural^2
+  manmade
+
+color
+  blue
+  purple
+
+number
+  (3-5) # 3-5, inclusive
+  (1) # 0-1, with decimal
+  (5) # 1-5, inclusive
+
+generate
+  [landscape.[landtype].[color]]
+
+landscape
+  natural
+    blue
+      ice cave
+      snow fields
+    purple
+      swamp
+      giant skull # Without comment
+      # Comments should be ignored
+  manmade
+    blue
+      ice harvesting
+      town
+    purple
+      [animal] traps
+      battlefield

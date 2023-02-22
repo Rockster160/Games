@@ -55,7 +55,7 @@ class Maze
       frontier_cell.live = true
       all_neighbors.each { |cell| count_live_cell_neighbors!(cell) }
       draw
-      sleep 0.1
+      sleep 0.01
       no_frontier_cells = frontier_cells.count == 0
     end
     binding.pry
@@ -89,4 +89,4 @@ class Cell
 
 end
 
-Maze.new(20, 50).generate!.draw
+Maze.new(20, 30).generate!.draw

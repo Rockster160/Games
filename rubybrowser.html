@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>RailsWasm</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/ruby-3_2-wasm-wasi@1.0.1/dist/browser.script.iife.js"></script>
+  </head>
+
+  <body>
+    <button id="my_btn">Click!</button>
+    <img id="load-image" width="40%">
+  </body>
+  <script type="text/ruby">
+    require "js"
+    puts "This is ruby in the browser!"
+    document = JS.global[:document]
+    load_image = document.getElementById("load-image")
+    button = document.getElementById("my_btn")
+    button.addEventListener "click" do |e|
+      load_image[:src] = "https://upload.wikimedia.org/wikipedia/commons/f/f1/Ruby_logo.png"
+    end
+  </script>
+</html>

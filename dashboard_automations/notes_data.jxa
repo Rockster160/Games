@@ -1,0 +1,16 @@
+// osascript -l JavaScript /Users/rocco/code/games/dashboard_automations/notes_data.jxa
+
+// Docs:
+// Script Editor
+// File -> Open Dictionary
+// Choose app
+
+// Safari > Preferences > Advanced > Show Develop menu in menu bar
+// Safari > Develop > [Your Device Name] > Automatically Show Web Inspector for JS Contexts,
+
+const Notes = Application("Notes")
+
+let note = Notes.notes.byId("x-coredata://AE25DDE0-BFA4-4069-A72A-9A0F7772A5FE/ICNote/p459")
+
+console.log(note.modificationDate())
+console.log(note.plaintext())

@@ -1,0 +1,8 @@
+def destroy id, current_user
+  {{resource}} = ::{{constant}}.find id
+  raise ::API::UnauthorizedError unless current_user.can? :destroy, {{resource}}
+
+  {{resource}}.destroy!
+
+  ::BaseSerializer.empty
+end

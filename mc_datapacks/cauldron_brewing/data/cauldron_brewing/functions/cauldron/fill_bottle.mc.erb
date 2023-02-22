@@ -1,0 +1,58 @@
+# -- Remove filled water bottle from player.
+<% water_item = E.item(:potion).closest(3).tag("{Potion:\"minecraft:water\"}") %>
+# If their inventory is full, the item is thrown on the floor, so remove that.
+execute at @s if entity <%= water_item %> run kill <%= water_item %>
+# If there is space in their inventory, no item drops, so clear the item from slot instead
+execute at @s unless entity <%= water_item %> run clear @s <%= potion_item(:water) %> 1
+
+<% cauldron = E.tag(:cauldron).closest(0.5) %>
+<%= cauldron %>
+
+# Plain
+execute if entity <%= cauldron.dup.tag(:plain) %> run give @s <%= potion_item(:water) %> 1
+
+# Awkward
+execute if entity <%= cauldron.dup.tag(:awkward) %> run give @s <%= potion_item(:awkward) %> 1
+
+# Mundane
+execute if entity <%= cauldron.dup.tag(:mundane) %> run give @s <%= potion_item(:mundane) %> 1
+
+# Thick
+execute if entity <%= cauldron.dup.tag(:thick) %> run give @s <%= potion_item(:thick) %> 1
+<% potion_list.each do |potion| %><%
+  next if [:plain, :mundane, :awkward, :thick].include?(potion.key)
+  next if [:resistance, :blindness, :confusion, :exhaust, :haste, :hunger].include?(potion.key)
+  potion_cauldron = cauldron.dup.tag(potion.camel)
+%>
+# <%= potion.title %>
+execute if entity <%= potion_cauldron.dup.tag("!strong_potion", "!long_potion") %> run give @s <%= potion.base? ? potion_item(potion.key) : potion_item(:mundane) %> 1
+execute if entity <%= potion_cauldron.dup.tag(:long_potion) %> run give @s <%= potion.long? ? potion_item("long_#{potion.key}") : potion_item(:mundane) %> 1
+execute if entity <%= potion_cauldron.dup.tag(:strong_potion) %> run give @s <%= potion.strong? ? potion_item("strong_#{potion.key}") : potion_item(:mundane) %> 1
+<% end %>
+# Missing:
+# Resistance (resistance)
+# Blindness (blindness)
+# Confusion (confusion)
+# Exhaust (digSlowDown)
+# Haste (digSpeed)
+# Hunger (hunger)
+
+execute as <%= cauldron %> run tp @s ~ ~-0.2 ~
+
+kill <%= cauldron.dup.tag(:brew1) %>
+
+tag <%= cauldron.dup.tag(:brew2) %> add brew1
+tag <%= cauldron.dup.tag(:brew2) %> remove brew2
+
+tag <%= cauldron.dup.tag(:brew3) %> add brew2
+tag <%= cauldron.dup.tag(:brew3) %> remove brew3
+
+# # Haste
+# give @s minecraft:potion{CustomPotionEffects:[{Id:2,Amplifier:1,Duration:2400},{Id:3,Amplifier:1,Duration:2400}],CustomPotionColor:16181504,display:{Name:"{\"text\":\"§rPotion of Mining\"}"}} 1
+# give @s minecraft:potion{CustomPotionEffects:[{Id:2,Amplifier:1,Duration:6000},{Id:3,Amplifier:1,Duration:6000}],CustomPotionColor:16181504,display:{Name:"{\"text\":\"§rPotion of Mining\"}"}} 1
+# give @s minecraft:potion{CustomPotionEffects:[{Id:2,Amplifier:3,Duration:1800},{Id:3,Amplifier:3,Duration:1800}],CustomPotionColor:16181504,display:{Name:"{\"text\":\"§rPotion of Mining\"}"}} 1
+
+# # Levitation
+# give @s minecraft:potion{CustomPotionEffects:[{Id:25,Duration:240}],CustomPotionColor:14810044,display:{Name:"{\"text\":\"§rPotion of Levitation\"}"}} 1
+# give @s minecraft:potion{CustomPotionEffects:[{Id:25,Duration:440}],CustomPotionColor:14810044,display:{Name:"{\"text\":\"§rPotion of Levitation\"}"}} 1
+# give @s minecraft:potion{CustomPotionEffects:[{Id:25,Amplifier:1,Duration:200}],CustomPotionColor:14810044,display:{Name:"{\"text\":\"§rPotion of Levitation\"}"}} 1

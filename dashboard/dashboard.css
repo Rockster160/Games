@@ -1,0 +1,124 @@
+.html-ctr-dashboard {
+	 background: #112435;
+	 width: 100%;
+	 height: 100%;
+}
+ .html-ctr-dashboard, .html-ctr-dashboard * {
+	 box-sizing: border-box;
+}
+ .html-ctr-dashboard .ctr-dashboard {
+	 margin: 0;
+	 background: #112435;
+	 padding: 10px;
+	 width: 100%;
+	 height: 100%;
+	 overflow: hidden;
+	 color: lightgrey;
+	 font-family: "terminess", monospace;
+	 font-size: 0.9rem;
+	 text-align: center;
+}
+ .dashboard-omnibar {
+	 position: fixed;
+	 right: 0;
+	 bottom: 0;
+	 left: 0;
+	 padding: 10px;
+}
+ .dashboard-omnibar input[type=text] {
+	 margin: 4px auto;
+	 border: 2px solid rgba(100, 129, 161, 0.5);
+	 border-radius: 4px;
+	 background: #112435;
+	 padding: 8px;
+	 width: 100%;
+	 color: lightgrey;
+	 font-family: monospace;
+	 font-size: 18px;
+}
+ .dashboard-omnibar input[type=text]:focus {
+	 outline: none;
+}
+ @keyframes flashdash {
+	 0% {
+		 border-color: #1f4a7b;
+	}
+	 10% {
+		 border-color: #337bcd;
+	}
+	 100% {
+		 border-color: #1f4a7b;
+	}
+}
+ @keyframes flashdashactive {
+	 0% {
+		 border-color: #337bcd;
+	}
+	 10% {
+		 border-color: #5da6f8;
+	}
+	 100% {
+		 border-color: #337bcd;
+	}
+}
+ .dashboard {
+	 row-gap: 0.9rem;
+	 display: inline-grid;
+	 grid-template-columns: repeat(4, 241px);
+	 grid-template-rows: repeat(5, 144px);
+	 column-gap: 3px;
+	 transition: border-color 1s;
+	 text-align: left;
+}
+ .dashboard .dash-cell {
+	 position: relative;
+	 border: 2px solid #1f4a7b;
+	 border-radius: 4px;
+	 padding: 5px 3px;
+	 width: 100%;
+	 height: 100%;
+}
+ .dashboard .dash-cell.flash {
+	 animation: 1s ease-out flashdash;
+}
+ .dashboard .dash-cell.active {
+	 border-color: #337bcd;
+}
+ .dashboard .dash-cell.active.flash {
+	 animation: 1s ease-out flashdashactive;
+}
+ .dashboard .dash-cell.hide {
+	 display: none;
+}
+ .dashboard .dash-cell .dash-title {
+	 position: absolute;
+	 top: -10px;
+	 width: 100%;
+	 text-align: center;
+}
+ .dashboard .dash-cell .dash-title span {
+	 background: #112435;
+	 padding: 0 5px;
+	 height: 0.9rem;
+	 line-height: 0.9rem;
+}
+ .dashboard .dash-cell .dash-content {
+	 max-height: 100%;
+	 overflow: hidden;
+	 line-height: 0.9rem;
+	 white-space: pre-wrap;
+}
+ .dashboard .dash-cell .dash-content * {
+	 display: inline-block;
+	 line-height: 0.9rem;
+}
+ .dashboard .dash-cell .dash-content e, .dashboard .dash-cell .dash-content es {
+	 display: inline-block;
+	 width: 0.45rem;
+	 height: 0.9rem;
+	 line-height: 0.9rem;
+}
+ .dashboard .dash-cell .dash-content e {
+	 width: 0.9rem;
+	 font-family: emoji;
+}

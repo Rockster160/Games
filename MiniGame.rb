@@ -5,7 +5,6 @@
 require 'io/console'
 
 class MiniGame
-
   def initialize
     @cx = 0
     @cy = 0

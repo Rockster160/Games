@@ -1,0 +1,80 @@
+# frozen_string_literal: true
+
+RSpec.describe "[GET] /web/{{plural_resource}}", type: :request do
+  let(:path) { "/web/{{plural_resource}}" }
+  let(:company) { ::FactoryBot.create :company }
+  let(:user) {
+    ::FactoryBot.create(
+      :user,
+      :with_role,
+      role_name: :customer_manager,
+      company: company,
+    )
+  }
+  let(:other_user) {
+    ::FactoryBot.create(
+      :user,
+      :with_role,
+      role_name: :customer_manager,
+    )
+  }
+
+  let(:{{resource}}1) { ::FactoryBot.create :{{resource}}, company: company }
+  let(:{{resource}}2) { ::FactoryBot.create :{{resource}}, company: company }
+
+  before do
+    # Init data
+    {{resource}}1
+    {{resource}}2
+  end
+
+  context "when signed in as slingshot rep" do
+    before do
+      sign_in user
+    end
+
+    it "successfully retrieves" do
+      get path
+
+      expect(response).to be_successful
+      expect(json[:data].map { |c| c[:id] }).to match_array([{{resource}}1.id, {{resource}}2.id])
+      expect(json[:data].first.keys).to include(:name)
+    end
+  end
+
+  context "when signed in as manager" do
+    before do
+      sign_in user
+    end
+
+    it "successfully retrieves" do
+      get path
+
+      expect(response).to be_successful
+      expect(json[:data].map { |c| c[:id] }).to match_array([{{resource}}1.id, {{resource}}2.id])
+      expect(json[:data].first.keys).to include(:name)
+    end
+  end
+
+  context "when pulling outside of company" do
+    before do
+      sign_in other_user
+    end
+
+    it "fails to retrieve" do
+      get path
+
+      expect(response).to be_successful
+      expect(json[:data].map { |c| c[:id] }).to match_array([])
+      expect(json[:data].first.keys).to include(:name)
+    end
+  end
+
+  context "when not logged in" do
+    it "fails to retrieve" do
+      get path
+
+      expect(response).not_to be_successful
+    end
+  end
+end

@@ -1,0 +1,8 @@
+def update id, params, current_user
+  {{resource}} = ::{{constant}}.find id
+  raise ::API::UnauthorizedError unless current_user.can? :update, {{resource}}
+
+  {{resource}}.update! params
+
+  ::Web::{{constant}}Serializer.new {{resource}}
+end

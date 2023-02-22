@@ -1,0 +1,22 @@
+# Create particles based on the potion type
+
+# Colors pulled from `/functions/particles/cauldron_effect.mcfunction`
+
+# execute at @e[tag=cauldron,tag=successful_brew,tag=<potion name>] run particle minecraft:entity_effect ~ ~0.5 ~ <r> <g> <b> <sat> 0
+# * <potion name> is the tag added when the brew was made
+# * <r> is the "red" component of the particle color. This is RGB based, but scaled to 0..1
+# * <g> is the "green" component of the particle color. This is RGB based, but scaled to 0..1
+# * <b> is the "blue" component of the particle color. This is RGB based, but scaled to 0..1
+# * <sat> is saturation of the color between 0..128 0 will saturate the color to black, 128 is the actual provided color
+<% potion_list.each do |potion| %><%
+  next if [:plain, :mundane, :thick].include?(potion.key)
+%>
+# <%= potion.title %>
+# Hex: <%= potion.hex %>
+# RGB: <%= potion.rgb.join(" ") %>
+# RGB1: <%= potion.rgb_dec.join(" ") %><%
+3.times do %>
+execute at <%= E.tag(:cauldron, :successful_brew, potion.key) %> run particle minecraft:entity_effect ~ ~0.5 ~ <%= potion.rgb_dec.join(" ") %> 128 0<%
+end %>
+<% end %>
+tag @e[tag=successful_brew] remove successful_brew
