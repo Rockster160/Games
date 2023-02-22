@@ -35,6 +35,14 @@ class InfiniBoard
     val
   end
 
+  def area(xrange, yrange)
+    yrange.map do |y|
+      xrange.map do |x|
+        at(x, y)
+      end
+    end
+  end
+
   def to_a
     @width = width
     @height = height

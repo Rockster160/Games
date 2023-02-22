@@ -19,16 +19,30 @@ class Pencil
   end
 
   # Change all instances of old_str into new_str and color it
-  def sprite(old_str, new_str, color=nil, ground=:fg)
-    @sprites[old_str.to_s] = Colorize.color(color, Draw.draw(new_str), ground)
+  def sprite(old_str, new_str, color, bg: nil)
+    str = Draw.draw(new_str)
+    str = Colorize.color(bg, str, :bg) if bg
+    str = Colorize.color(color, str, :fg)
+    @sprites[old_str.to_s] = str
+  end
+
+  def color_sprite(raw_str, color, bg: nil)
+    str = Draw.draw(raw_str)
+    str = Colorize.color(bg, str, :bg) if bg
+    str = Colorize.color(color, str, :fg)
+    @sprites[raw_str.to_s] = str
   end
 
   # Place char at coords
-  def object(str, coord, color=nil, ground=:fg)
-    @objects[coord.to_s] = Colorize.color(color, Draw.draw(str), ground)
+  def object(str, coord, color=nil, bg: nil)
+    str = Draw.draw(str)
+    str = Colorize.color(bg, str, :bg) if bg
+    str = Colorize.color(color, str, :fg)
+    @objects[coord.to_s] = str
   end
 end
 
+$special_chars = {} # init global var
 module Draw
   module_function
 
@@ -46,6 +60,11 @@ module Draw
     br: "┘",
   }
 
+  def register_special_chars(width, *chars)
+    chars.each do |char|
+      $special_chars[char] = width
+    end
+  end
   def cell_width=(new_width); $cell_width = new_width; end
   def cell_width; $cell_width || 2; end
   def origin=(new_o); $board_origin = new_o.then { |x, y| [x, y] }; end
@@ -108,13 +127,14 @@ module Draw
 
   def format(text, length)
     width = cell_width
-    width -= 1 if text.to_s.match?(/\p{Emoji_Presentation}/iu)
+    char_width = 2 if text.to_s.match?(/\p{Emoji_Presentation}/iu)
+    char_width ||= ($special_chars[text] || 1)
 
-    text.to_s.ljust(width, " ")
+    text.to_s.ljust(char_width - 1, " ")
   end
 
-  def draw(text)
-    format(text, cell_width)
+  def draw(text, opts={})
+    format(text, opts[:width] || cell_width)
   end
 
   def draw_borders(board_arr, opts={})

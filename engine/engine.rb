@@ -43,23 +43,27 @@ class Engine
     @tick_time = (1/new_fps.to_f).clamp(0.001, 10)
   end
 
-  def self.pause(ctx=binding)
-    # Engine.pause(binding)
-    l = Proc.new { |var| ctx.eval(var.to_s) }
-    # l[:cell] => calls local var `cell` from previous binding
-
+  def self.prepause
     $running = false
     $inputthread = 0
     $pry = false
     Input.mode(:term)
     print Colorize.reset_code
+  end
 
-    # binding.pry
-    $done || ($done ||= true) && binding.pry
-
+  def self.postpause
     $running = true
     $inputthread = Input.inputthread(@@engine)
     Input.mode(:game)
+  end
+
+  def self.pause(ctx=binding)
+    # Engine.pause(binding)
+    l = Proc.new { |var| ctx.eval(var.to_s) }
+    # l[:cell] => calls local var `cell` from previous binding
+    prepause
+    $done || ($done ||= true) && binding.pry
+    postpause
   end
 
   def self.benchmark(&block)

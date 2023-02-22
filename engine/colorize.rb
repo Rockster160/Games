@@ -90,3 +90,6 @@ end
 def uncolor
   "\e[0m"
 end
+def rgb(*arr)
+  arr
+end

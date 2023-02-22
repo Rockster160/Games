@@ -59,6 +59,11 @@ module Input
         engine.last_key = key if key
         STDIN.getc while STDIN.ready?
       end
+    rescue StandardError => e
+      engine.quit
+      puts "#{e.inspect}"
+      puts e.backtrace
+      engine.fullquit
     end
   end
 
