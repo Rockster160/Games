@@ -30,7 +30,7 @@
     position: relative;
   }
 
-  .add-button {
+  .button {
     position: absolute;
     top: 10px;
   }
@@ -47,16 +47,10 @@
   <div class="columns-container">
     <div class="column grandparent-column">
       <div class="nodes"></div>
-      <!-- <div class="node">Grandparent 1</div>
-      <div class="node">Grandparent 2</div> -->
     </div>
     <div class="column parent-column">
-      <button class="add-button add-parent">Add Node</button>
+      <button class="button add-btn add-parent">Add Node</button>
       <div class="nodes"></div>
-      <!-- <div class="node">Parent 1</div>
-      <div class="node">Parent 2</div>
-      <div class="node">Parent 3</div>
-      <div class="node">Parent 4</div> -->
     </div>
     <div class="column current-column">
       <div class="nodes">
@@ -64,26 +58,27 @@
       </div>
     </div>
     <div class="column child-column">
-      <button class="add-button add-child">Add Node</button>
+      <button class="button add-btn add-child">Add Node</button>
       <div class="nodes"></div>
-      <!-- <div class="node">Child 1</div>
-      <div class="node">Child 2</div>
-      <div class="node">Child 3</div> -->
     </div>
     <div class="column grandchild-column">
+      <button class="button save">Save</button>
       <div class="nodes"></div>
-      <!-- <div class="node">Grandchild</div> -->
     </div>
   </div>
 
   <script>
+  let rootname = "#root"
     // console.log(Move.import(movesjson));
     // console.log(Move.export());
+
+    // -- TODO
+    // Maybe some way to import a tree structure
 
     let currentMove = undefined // Placeholder for whatever move is currently selected
     let fileHandle = undefined // Placeholder for the opened file
 
-    document.querySelectorAll(".add-button").forEach((button, index) => {
+    document.querySelectorAll(".add-btn").forEach((button, index) => {
       button.addEventListener("click", function() {
         const text = prompt("Enter move name:");
         if (text) {
@@ -94,17 +89,21 @@
           }
 
           populateColumns(currentMove?.name)
-          save()
+          // save()
         }
       });
     });
+
+    document.querySelector(".save").addEventListener("click", function() {
+      save() && alert(`Saved! ${moves.length} tricks`)
+    })
 
     document.addEventListener("contextmenu", function(event) {
       event.preventDefault();
       let node = event.target
       if (node.classList.contains("node")) {
         let nodeName = node.getAttribute("name")
-        if (nodeName == "#root") { return }
+        if (nodeName == rootname) { return }
         let column = node.closest(".column")
         if (column.classList.contains("current-column")) {
           Move.remove(nodeName)
@@ -115,7 +114,7 @@
           currentMove?.removeChild(nodeName)
         }
         populateColumns(currentMove?.name)
-        save()
+        // save()
       }
     });
 
@@ -142,14 +141,15 @@
         } else {
           currentMove = Move.findOrCreate(event.target.textContent)
         }
-        save() // This is called on every key event, so maybe have a delay or something to only save after the contenteditable is blurred?
+        // save() // This is called on every key event, so maybe have a delay or something to only save after the contenteditable is blurred?
       }
     });
 
     let addColumnNode = function(move, column) {
-      let name = move?.name || "#root"
+      let name = move?.name || rootname
       const node = document.createElement("div");
       node.classList.add("node")
+      if (!move) { node.classList.add("root-node") }
       node.setAttribute("name", name)
       node.setAttribute("parentIds", move?.parents?.map(ancestor => ancestor.name).join("|") || "")
       node.textContent = name;
@@ -159,6 +159,7 @@
     }
 
     function populateEmpty() {
+      currentMove = null
       const grandparentColumn = document.querySelector(".grandparent-column .nodes");
       const parentColumn = document.querySelector(".parent-column .nodes");
       const currentColumn = document.querySelector(".current-column .nodes");
@@ -177,7 +178,7 @@
     }
 
     function populateColumns(movename) {
-      if (!movename || movename == "#root") { return populateEmpty() }
+      if (!movename || movename == rootname) { return populateEmpty() }
 
       let move = Move.find(movename)
       currentMove = move
@@ -228,32 +229,37 @@
 
     let save = function() {
       if (!fileHandle) {
-        return console.log("No file to save to!");
+        console.log("No file to save to!");
+        return false
       }
-      writeFile(fileHandle, Move.export())
+      return writeFile(fileHandle, Move.export())
     }
 
     async function writeFile(fileHandle, contents) {
-      // Support for Chrome 82 and earlier.
-      if (fileHandle.createWriter) {
-        // Create a writer (request permission if necessary).
-        const writer = await fileHandle.createWriter();
-        // Write the full length of the contents
-        await writer.write(0, new TextEncoder().encode(contents));
-        // Close the file and write the contents to disk
-        await writer.close();
-        return;
+      try {
+        // Support for Chrome 82 and earlier.
+        if (fileHandle.createWriter) {
+          // Create a writer (request permission if necessary).
+          const writer = await fileHandle.createWriter();
+          // Write the full length of the contents
+          await writer.write(0, new TextEncoder().encode(contents));
+          // Close the file and write the contents to disk
+          await writer.close();
+          return;
+        }
+        // For Chrome 83 and later.
+        // Create a FileSystemWritableFileStream to write to.
+        const writable = await fileHandle.createWritable();
+        // Write the contents of the file to the stream.
+        await writable.write(new TextEncoder().encode(contents));
+        // Close the file and write the contents to disk.
+        await writable.close();
+        return true
+      } catch (e) {
+        console.log(e);
+        return false
       }
-      // For Chrome 83 and later.
-      // Create a FileSystemWritableFileStream to write to.
-      const writable = await fileHandle.createWritable();
-      // Write the contents of the file to the stream.
-      await writable.write(new TextEncoder().encode(contents));
-      // Close the file and write the contents to disk.
-      await writable.close();
     }
-
-    // populateColumns("Trick")
   </script>
 </body>
 </html>
