@@ -28,6 +28,10 @@ class DataManager
     new(self.name.to_s.downcase.to_sym).update
   end
 
+  def self.get
+    new(self.name.to_s.downcase.to_sym).get
+  end
+
   def initialize(type)
     @type = type
     @filename = File.join(__dir__, "#{@type}.json")
@@ -44,12 +48,17 @@ class DataManager
     puts "\e[33m[LOGIT] | Updating: #{@type}\e[0m"
     @new_data = get
     if @new_data.to_json != @old_data.to_json
-      File.write(@filename, @new_data.to_json)
-
+      failed = false
+      # ["http://localhost:3141/webhooks/local_data"].each do |url|
       ["https://ardesian.com/webhooks/local_data", "http://localhost:3141/webhooks/local_data"].each do |url|
         headers = { "Authorization": "Basic #{ENV['PORTFOLIO_AUTH']}" }
         RestClient.post(url, { local_data: { @type => @new_data } }, headers)
+      rescue StandardError => e
+        puts "\e[31mFailed: #{e.message}\e[0m"
+        failed = true
+        # no-op - don't fail if servers fail to connect
       end
+      File.write(@filename, @new_data.to_json) unless failed
     end
     puts "\e[32m[LOGIT] | Done: #{@type}\e[0m"
   rescue StandardError => e
@@ -96,23 +105,67 @@ class Calendar < DataManager
   def get
     options = [
       :includeOnlyEventsFromNowOn,
-      # :formatOutput,
       :separateByDate,
       :noRelativeDates,
-      :noCalendarNames,
       :showUIDs,
     ]
+    separators = {
+      section: "#icalbuddysection#",
+      prop: "#icalbuddyprop#",
+      newline: "#icalbuddynewline#",
+      bullet: "#icalbuddybullet#",
+    }
     options_with_vals = {
       excludeCals: "Bills, B18F1275-1162-4B5F-9FA6-6C02C5FE484B",
       includeCalTypes: "CalDAV",
-      excludeEventProps: "notes, attendees",
+      excludeEventProps: "attendees",
+      sectionSeparator: separators[:section],
+      propertySeparators: "|#{separators[:prop]}|",
+      notesNewlineReplacement: separators[:newline],
+      bullet: separators[:bullet],
+      includeEventProps: "title,datetime,uid,notes,location",
+      propertyOrder: "title,datetime,uid,notes,location",
     }
     options_str = options.map { |opt| "--#{opt}" }.join(" ")
     options_str += " " + options_with_vals.map { |opt, val| "--#{opt} \"#{val}\"" }.join(" ")
 
     raw_cal = `/opt/homebrew/bin/icalBuddy #{options_str} eventsToday+10`
+    # For some reason icalbuddy leaves newlines in locations, so fix that:
+    fixed_cal = "#{raw_cal}#{separators[:bullet]}".gsub(/location: (.|\n)*?(#icalbuddybullet#)/m) { |found|
+      found.gsub("\n", separators[:newline]).sub(/#{separators[:newline]}#{separators[:bullet]}/, "\n#{separators[:bullet]}")
+    }.sub(/#{separators[:bullet]}$/, "").gsub(/#{separators[:newline]}(\w{3} \d{1,2}, \d{4}:#{separators[:section]})/m, "\n" + '\1')
 
-    raw_cal.split("\n")
+    current_day = ""
+    fixed_cal.split("\n").each_with_object({}) { |line, obj|
+      next if line == ""
+      if line.match?(/\w{3} \d{1,2}, \d{4}:#{separators[:section]}/)
+        current_day = line[/\w{3} \d{1,2}, \d{4}/]
+        next
+      end
+
+      title, *parts = line.split(separators[:prop])
+      calendar_regex = / \([^\)]*\)$/
+      calendar = title[calendar_regex].to_s[2..-2]
+      name = title.sub(calendar_regex, "").sub(separators[:bullet], "")
+
+      obj[current_day] ||= []
+      data = {
+        name: name,
+        calendar: calendar,
+      }
+      parts.each do |part|
+        partname = part[/\w+: /]
+        if partname.nil?
+          start_time, end_time = part.split(" - ")
+          data[:start_time] = start_time
+          data[:end_time] = end_time
+          next
+        end
+        partdata = part.sub(/^#{partname}/, "")
+        data[partname[0..-3].to_sym] = partdata.gsub(separators[:newline], "\n").strip
+      end
+      obj[current_day] << data
+    }
   end
 end
 
@@ -120,5 +173,6 @@ now = Time.now
 # Only refresh at 3am each day -- this can take a long time to run.
 Contacts.update if now.hour == 3 && now.min === 0
 Calendar.update
-Reminders.update
-Notes.update
+## Reminders.update
+## Notes.update
+# puts Calendar.get
