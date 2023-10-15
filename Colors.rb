@@ -104,6 +104,6 @@ end
 
 show(ARGV) if ARGV.length > 0
 
-# all8bit
-# printall
-# showall
+# all8bit # Basic colors
+# printall # inline
+showall # formatted nicely

@@ -30,6 +30,10 @@ class Triangle
     DrawTriangle.svg(tri)
   end
 
+  def self.solve(*args)
+    new(*args).solve!
+  end
+
   def initialize(*args)
     tridata = self.class.format_args(args)
     @solution = tridata&.length == 6 ? tridata : {}
@@ -40,10 +44,15 @@ class Triangle
     @angles = @given.slice(:A, :B, :C).transform_keys(&:downcase)
     raise "Triangle must have at least 1 side" if @sides.length == 0
 
-    puts "\e[33m#{TriangleHelpers.json_to_input(@given)}\e[0m"
-    puts "\e[32m#{TriangleHelpers.json_to_input(@solution)}\e[0m" if @solution.present?
+    # puts "\e[33m#{TriangleHelpers.json_to_input(@given)}\e[0m"
+    # puts "\e[32m#{TriangleHelpers.json_to_input(@solution)}\e[0m" if @solution.present?
 
     solve!
+  end
+
+  def area
+    solved = to_json
+    (solved[:a] * solved[:b] * Math.sin(d2r(solved[:C]))) / 2.to_f
   end
 
   def solve!
@@ -113,34 +122,34 @@ class Triangle
   end
 end
 
-test_triangles = [
-  nil,                                 # 0
-  { a: 8, b: 6, c: 7 },                # 1
-  { A: 46.8, B: 90, c: 172 },          # 2
-  { C: 46.8, A: 90, b: 172 },          # 3
-  { A: 60, B: 60, c: 100 },            # 4
-  { C: 90, A: 45, b: 50 },             # 5
-  { a: 27, A: 95, b: 16 },             # 6
-  { a: 270, A: 95, b: 160 },           # 7
-  { b: 258, c: 305, C: 81.2 },         # 8
+# test_triangles = [
+#   nil,                                 # 0
+#   { a: 8, b: 6, c: 7 },                # 1
+#   { A: 46.8, B: 90, c: 172 },          # 2
+#   { C: 46.8, A: 90, b: 172 },          # 3
+#   { A: 60, B: 60, c: 100 },            # 4
+#   { C: 90, A: 45, b: 50 },             # 5
+#   { a: 27, A: 95, b: 16 },             # 6
+#   { a: 270, A: 95, b: 160 },           # 7
+#   { b: 258, c: 305, C: 81.2 },         # 8
+#
+#   {"b"=>210.0,"c"=>208.0,"A"=>7.95},   # 9 - string keys
+#   { b: 210.0, c: 208.0, A: 7.95 },     # 10
+#   "b=210.0 c=208.0 A=7.95",            # 11 - single string
+#   ["b=210.0", "c=208.0", "A=7.95"],    # 12 - array of strings
+#
+#   "b=258 c=305 C=81.2",                # 13
+#
+#   {:A=>23.08, :a=>99.0, :C=>66.92,     # 14 - solution (with rounding error)
+#     :b=>250.0, :c=>230.0, :B=>90.0},
+#   ["A=31.9", "b=225.0", "C=82.2",       # 15 - solution (working)
+#     "a=130.0", "B=66.0", "c=244.0"]
+# ]
 
-  {"b"=>210.0,"c"=>208.0,"A"=>7.95},   # 9 - string keys
-  { b: 210.0, c: 208.0, A: 7.95 },     # 10
-  "b=210.0 c=208.0 A=7.95",            # 11 - single string
-  ["b=210.0", "c=208.0", "A=7.95"],    # 12 - array of strings
 
-  "b=258 c=305 C=81.2",                # 13
-
-  {:A=>23.08, :a=>99.0, :C=>66.92,     # 14 - solution (with rounding error)
-    :b=>250.0, :c=>230.0, :B=>90.0},
-  ["A=31.9", "b=225.0", "C=82.2",       # 15 - solution (working)
-    "a=130.0", "B=66.0", "c=244.0"]
-]
-
-
-Triangle.render(
-  [*ARGV].flatten.presence || test_triangles[15].presence || TriangleHelpers.random_triangle
-)
+# Triangle.render(
+#   [*ARGV].flatten.presence || test_triangles[15].presence || TriangleHelpers.random_triangle
+# )
 # [LOGIT] | {:A=>23.08, :a=>99.0, :C=>66.92}
 # [LOGIT] | {:A=>23.08, :a=>99.0, :C=>66.92, :b=>250.0, :c=>230.0, :B=>90.0}
 

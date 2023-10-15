@@ -1,5 +1,5 @@
 require "json"
-# require "pry-rails"
+require "pry-rails"
 
 class ToolsJsonParser
   class << self
@@ -18,23 +18,32 @@ class ToolsJsonParser
       end
     end
 
-    def parse(raw_json)
-      raw_json = raw_json.to_s
-      token = gen_token(raw_json)
-      # ========== Convert Hashrocket to regular JSON ========
-      # -- Replace dates
-      # NOTE: The below will replace timestamps already in strings with a string wrapped timestamp.
-      # This CAN break real JSON string match since the quotes won't be escaped.
+    def parse(ojson)
+      raw_json = ojson.to_s
+      # token = gen_token(raw_json)
+      # # ========== Convert Hashrocket to regular JSON ========
+      # # -- Replace dates
+      # # NOTE: The below will replace timestamps already in strings with a string wrapped timestamp.
+      # # This CAN break real JSON string match since the quotes won't be escaped.
       raw_json.gsub!(timestamp_regex, '"\1"')
-      # -- Replace keys
-      # Not currently working with single quotes
-      raw_json.gsub!(/([^\"]):?\"(.*?)\"( ?=>)?/) { |found|
-        "#{Regexp.last_match(1)}#{token}#{Regexp.last_match(2)}#{token}#{':' if Regexp.last_match(3)&.include?('=>')}"
-      }
-      raw_json.gsub!(/:(\w+) ?=>/) { |found| "#{token}#{Regexp.last_match(1)}#{token}:" }
       # -- Replace nil->null
       raw_json.gsub!(/\bnil\b/, "null")
-      raw_json.gsub!(token, "\"")
+
+      # Handle colons inside string values
+      raw_json.gsub!(/("[^"]*")/) { |found| found.gsub(":", "\\u003A") }
+      raw_json.gsub!(/('[^']*')/) { |found| found.gsub(":", "\\u003A") }
+
+      # Replace hashrockets with JSON format
+      raw_json.gsub!(/:(\w+)\s*=>/, '"\1":')
+      raw_json.gsub!(/"([^"]*)"\s*=>/, '"\1":')
+      raw_json.gsub!(/'([^']*)'\s*=>/, '"\1":')
+
+      # Convert symbolized keys to strings
+      raw_json.gsub!(/\b(\w+):/, '"\1":')
+
+      # Convert symbolized values to strings
+      raw_json.gsub!(/:(\w+)\b/, '"\1"')
+      # raw_json.gsub!(token, "\"")
 
       JSON.parse(raw_json)
     end

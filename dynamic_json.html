@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Key-Value Field</title>
+  <style>
+    .key-val-row {
+      margin-bottom: 10px;
+    }
+
+    .key-val-row input[type="text"] {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <form id="keyValueForm">
+    <div id="key-val-wrapper">
+      <template id="key-val-template">
+        <div class="key-val-row">
+          <input type="text" name="scripting[key][]" placeholder="Key" class="dynamic-key" onfocus="this.select()">
+          <input type="text" name="scripting[value][]" placeholder="Value" class="dynamic-val" onfocus="this.select()">
+          <span class="remove">X</span>
+        </div>
+      </template>
+    </div>
+    <input type="submit" value="Submit">
+  </form>
+
+  <script>
+    let addRow = function() {
+      var template = document.getElementById("key-val-template")
+      var container = document.getElementById("key-val-wrapper")
+      var clone = template.content.cloneNode(true)
+      container.appendChild(clone)
+    }
+
+    let checkFields = function() {
+      var keys = document.querySelectorAll(".dynamic-key")
+      var values = document.querySelectorAll(".dynamic-val")
+      var allKeysFilled = true
+
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i].value.trim()
+        var value = values[i].value.trim()
+
+        if (key === "") { allKeysFilled = false }
+      }
+
+      if (allKeysFilled) { addRow() }
+    }
+    checkFields() // Add a single blank row on page load
+
+    document.addEventListener("click", function(evt) {
+      if (evt.target.classList.contains("remove")) {
+        evt.target.parentElement.remove()
+        checkFields()
+      }
+    })
+    document.addEventListener("keydown", function(evt) {
+      if (evt.target.classList.contains("dynamic-key")) {
+        checkFields()
+      }
+    })
+  </script>
+</body>
+</html>

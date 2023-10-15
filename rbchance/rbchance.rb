@@ -6,7 +6,7 @@ require "pry-rails"
 # Special items
 # * Range of numbers `(1-9)`: 1-9 `(450)`: 1-450
 # * Inline list `this|or this|maybe this`
-# Maybe? Add dot functions of each nested value (Multi-word would need to use squre brackets)
+# Maybe? Add dot functions of each nested value (Multi-word would need to use square brackets)
 
 class RbChance
   attr_accessor :json, :key, :parent, :ancestor

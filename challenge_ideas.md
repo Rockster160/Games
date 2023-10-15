@@ -1,3 +1,63 @@
+Cards - 5 Card Draw + exchange cards + win detection
+√ Numbers - Random generation with weights
+Words - Transformation
+√ Colors - Fade from one color to other OR Color Mapper
+Wordle/Mastermind
+
+Free search parser
+  in:archive name::Rocco notes~pull
+  * Expand into hash
+  * If multiple of the same thing (name:Rocco name:Luffy) auto do an OR between these two
+    * Otherwise everything does AND
+
+RoboMouse
+Endpoint that you can Ping to start, and responds with available directions.
+Can then send another request with a given Direction (LRSB), and response will be next available directions (LRSB)
+Meta data should include the number of moves made and whether or not the current position is the goal or not. 
+Store the map and the current coord server side somehow.
+
+Gaming App
+  Incorporated Algorithm and data structures into a game for mobile apps
+  Implemented 10 levels that enables users to win prizes
+  Added customization features for the users' characters
+Portfolio Website
+  Designed online album that shows screen captures of built programs
+  included a description of each programs' purpose and features
+  added a submission field for people to submit inquiries
+Social Media App
+Food Tracker
+  Calculator for nutritional vals
+Transportation App
+  Maps integration
+  Traffic detection
+Retail App
+  Buy/Sell Items
+  Submit questions to seller
+  Search engine
+Recommendation
+  Gives book ideas based on submitted preferences
+Payment App
+  Send/request money from users
+  Track finances
+  Save contacts
+
+
+Ruby concepts:
+  Adding custom methods inside of blocks. Use Engine::Pencil for reference
+
+Routes.configure do
+  get :path # <-- Where does this come from??
+end
+
+
+
+Machine Learning?
+  Given a large set of numbers (10k random)
+    Create an algorithm that generates roughly the same generation lines
+      (For example, the 10k numbers create a bell curve- write a function that generates numbers that fall on the same bell curve)
+
+
+
 Neat things in Ruby:
   o[x] on an object is the same as calling o.call(x)
     * Can use this for calling procs
@@ -30,6 +90,18 @@ Lightning Talk:
   Live keys
   Colors in terminal
 
+Fractal
+Music generator: This could involve building a program that generates random music using simple rules like a Markov chain or a genetic algorithm.
+Connect4
+Recursive (Factorial or Fibonacci)
+Search algo? - linear search or binary search, which are fundamental algorithms in computer science.
+Machine learning
+* Detect algo for bell curve/random gen plot
+* Predict house price using linear regression
+Implement a graph traversal algorithm like breadth-first search or depth-first search to solve a problem like finding the shortest path between two nodes in a graph.
+Multithreading?
+Implement a binary search algorithm for a sorted array of integers.
+Create a program that generates a random maze and solves it using a depth-first search algorithm.
 Meta Programming
 FourIsMagic
 Kaprekar's Constant

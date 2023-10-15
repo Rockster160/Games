@@ -52,10 +52,10 @@ class SudokuSolver
   def backtracking_solve(x=0, y=0)
     easy_changes = []
     loop do
-       changes = easy_solve # First solve all "easy" cells (One possible solution)
-       return true if solved?
-       break if changes.none?
-       easy_changes += changes
+      changes = easy_solve # First solve all "easy" cells (One possible solution)
+      return true if solved?
+      break if changes.none?
+      easy_changes += changes
     end
 
     new_x, new_y = x+1, y
@@ -131,6 +131,7 @@ class SudokuSolver
   end
 
   def draw
+    sleep 0.05
     x = BOX_CHARS
     w = 6
     Draw.moveto(0, 0)
@@ -161,7 +162,7 @@ puzzle = [
   [0,0,0,0,8,0,0,7,9],
 ]
 
- solution = [
+solution = [
   [5,3,4,6,7,8,9,1,2],
   [6,7,2,1,9,5,3,4,8],
   [1,9,8,3,4,2,5,6,7],
@@ -199,7 +200,7 @@ hard_solution = [
 
 Draw.cls
 describe "Solution" do
-  it "should test for something" do
+  it "solves the puzzles" do
     Test.assert_equals(sudoku(puzzle), solution)
     Test.assert_equals(sudoku(hard_puzzle), hard_solution)
   end

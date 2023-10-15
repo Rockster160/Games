@@ -1,5 +1,4 @@
 # Random generation - Deck of Cards + Dealing + Poker
-# Tool - Multiple steps to put it all together - Color Fader
 
 # k=kyu, h=hours
 Random Generator
@@ -20,20 +19,20 @@ Mini Game
   Chess
   Pacman
   Tetris
-  GoL
+  # GoL
   Mover Puzzle / Boxes
   Maze game # Can only see two cells each direction- must solve maze
 Math
   Make Currency Change
-  FourIsMagic
+  # FourIsMagic
   Kaprekar's Constant
   Generate cardinal line on a grid
   Mixed Numbers
   Maze Solver
   Roman Numeral parse to/from
   Bowling Score
-  Scale/map
-  Weighted Number generation
+  # Scale/map
+  # Weighted Number generation
   Algorithms
     # Triangle
     Lumber Spacer
@@ -42,25 +41,29 @@ Math
     Compound Interest
     Recency Bias
     AI Stuff?
+      Predict algorithm of bell curve or other rand generation function
 Parser
   JSON (And JSON+) + Colorize
   YML (And YML+)
-  Words to Integer
+  # Words to Integer
 Function
-  Cipher
-    Text/Morse
+  # Cipher
+  #   Text
+  Morse-to-Text (And Back)
   Word Reverse
+  Pagination
 Tool
   Breadboard
   Paint (HTML or terminal?)
   # Boolean Truth Table generator
   # Set bitwise flags
   Web Scraper
-  Hash Branches
-  Color Fade
-  Colorize (Terminal)
-  Color Mapper # (multi-part: Normalize hex/rgb into color obj, fade from one color to another, then use temperature mapping to map color to temp)
+  Hash Branches / Leaf Plucker
+  # Color Fade
+  # Colorize (Terminal)
+  # Color Mapper # (multi-part: Normalize hex/rgb into color obj, fade from one color to another, then use temperature mapping to map color to temp)
   Pathfinding
+  Word Transformation # Change one letter at a time to convert between words
 Generator
   ASCII Table
   # SVG

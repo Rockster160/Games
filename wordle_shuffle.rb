@@ -1,3 +1,7 @@
+# [bread]
+# dream-ygggb
+# dread-bgggg (Black now despite the last letter being "d")
+
 require "pry-rails"
 require "/Users/rocco/code/games/dictionary.rb"
 # ARGV[0]

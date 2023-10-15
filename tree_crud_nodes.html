@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree Editor with Drag-and-Drop</title>
+<style>
+  ul {
+    list-style-type: none;
+    padding-left: 20px;
+  }
+  li {
+    cursor: pointer;
+  }
+  .dragover {
+    border: 2px dashed #000;
+  }
+</style>
+</head>
+<body>
+<div>
+  <input type="file" accept=".txt" id="file-input">
+  <button id="load-btn">Load</button>
+</div>
+<div id="tree-container">
+  <ul id="tree">
+    <li draggable="true">
+      <span>Root</span>
+      <ul>
+        <li draggable="true"><span>Child 1</span></li>
+        <li draggable="true"><span>Child 2</span></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+<button id="export-btn">Export</button>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const treeContainer = document.getElementById("tree-container");
+    const treeUl = document.getElementById("tree");
+    const exportBtn = document.getElementById("export-btn");
+    const fileInput = document.getElementById("file-input");
+    const loadBtn = document.getElementById("load-btn");
+
+    loadBtn.addEventListener("click", function() {
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const text = event.target.result;
+          buildTreeFromText(text);
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    exportBtn.addEventListener("click", function() {
+      const exportedText = generateExportedText(treeUl);
+      console.log(exportedText);
+    });
+
+
+
+    treeContainer.addEventListener("click", function(event) {
+      if (event.target.tagName === "SPAN") {
+        const text = event.target.textContent;
+        const newText = prompt("Edit node name:", text);
+        if (newText !== null) {
+          event.target.textContent = newText;
+        }
+      }
+    });
+
+    treeContainer.addEventListener("contextmenu", function(event) {
+      event.preventDefault();
+      const newNodeName = prompt("Enter new node name:");
+      if (newNodeName !== null && newNodeName.trim() !== "") {
+        const newNode = document.createElement("li");
+        newNode.draggable = true;
+        newNode.innerHTML = `<span>${newNodeName}</span>`;
+        const parentLi = event.target.closest("li");
+        if (parentLi) {
+          const ul = parentLi.querySelector("ul");
+          if (!ul) {
+            parentLi.appendChild(document.createElement("ul"));
+          }
+          parentLi.querySelector("ul").appendChild(newNode);
+        } else {
+          treeUl.appendChild(newNode);
+        }
+      }
+    });
+
+    treeContainer.addEventListener("dragstart", function(event) {
+      event.dataTransfer.setData("text/plain", event.target.outerHTML);
+    });
+
+    treeContainer.addEventListener("dragover", function(event) {
+      event.preventDefault();
+      if (event.target.tagName === "LI") {
+        event.target.classList.add("dragover");
+      }
+    });
+
+    treeContainer.addEventListener("dragleave", function(event) {
+      if (event.target.tagName === "LI") {
+        event.target.classList.remove("dragover");
+      }
+    });
+
+    treeContainer.addEventListener("drop", function(event) {
+      event.preventDefault();
+      if (event.target.tagName === "LI") {
+        event.target.classList.remove("dragover");
+        const draggedItem = event.dataTransfer.getData("text/plain");
+        const droppedLi = event.target;
+        const droppedUl = droppedLi.querySelector("ul");
+
+        if (!droppedUl) {
+          droppedLi.innerHTML = `<ul>${draggedItem}</ul>`;
+        } else {
+          droppedUl.innerHTML += draggedItem;
+        }
+
+        const newLi = droppedLi.querySelector("ul").lastElementChild;
+        newLi.draggable = true;
+        newLi.querySelector("span").addEventListener("click", handleNodeClick);
+        newLi.querySelector("span").addEventListener("contextmenu", handleNodeContextMenu);
+      }
+    });
+
+    function handleNodeClick(event) {
+      const text = event.target.textContent;
+      const newText = prompt("Edit node name:", text);
+      if (newText !== null) {
+        event.target.textContent = newText;
+      }
+    }
+
+    function handleNodeContextMenu(event) {
+      event.preventDefault();
+      const newNodeName = prompt("Enter new node name:");
+      if (newNodeName !== null && newNodeName.trim() !== "") {
+        const newNode = document.createElement("li");
+        newNode.draggable = true;
+        newNode.innerHTML = `<span>${newNodeName}</span>`;
+        const parentLi = event.target.closest("li");
+        if (parentLi) {
+          const ul = parentLi.querySelector("ul");
+          if (!ul) {
+            parentLi.appendChild(document.createElement("ul"));
+          }
+          parentLi.querySelector("ul").appendChild(newNode);
+        } else {
+          treeUl.appendChild(newNode);
+        }
+        newNode.querySelector("span").addEventListener("click", handleNodeClick);
+        newNode.querySelector("span").addEventListener("contextmenu", handleNodeContextMenu);
+      }
+    }
+
+    function generateExportedText(ulElement, level = 0) {
+      let text = "";
+      const nodes = ulElement.querySelectorAll("li");
+      for (const node of nodes) {
+        text += "  ".repeat(level) + node.querySelector("span").textContent + "\n";
+        const childUl = node.querySelector("ul");
+        if (childUl) {
+          text += generateExportedText(childUl, level + 1);
+        }
+      }
+      return text;
+    }
+
+    function buildTreeFromText(text) {
+      treeUl.innerHTML = ""; // Clear existing tree
+
+      const lines = text.split("\n");
+      let currentUl = treeUl;
+      let currentIndent = 0;
+
+      for (const line of lines) {
+        const indent = (line.match(/^  */)?.[0] || "").length / 2;
+        const nodeName = line.trim();
+
+        if (nodeName) {
+          const newNode = document.createElement("li");
+          newNode.innerHTML = `<span>${nodeName}</span>`;
+
+          if (indent === currentIndent) {
+            currentUl.appendChild(newNode);
+          } else if (indent > currentIndent) {
+            const newUl = document.createElement("ul");
+            newUl.appendChild(newNode);
+            currentUl.lastElementChild.appendChild(newUl);
+            currentUl = newUl;
+            currentIndent = indent;
+          } else {
+            while (indent < currentIndent) {
+              currentUl = currentUl.parentElement.parentElement;
+              currentIndent--;
+            }
+            currentUl.appendChild(newNode);
+          }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>

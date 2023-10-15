@@ -11,11 +11,11 @@
 
 animal
   cow
-  bat^0.2
+  bat^0.2 # 1/5 as likely
   sheep
 
 landtype
-  natural^2
+  natural^2 # Twice as likely
   manmade
 
 color

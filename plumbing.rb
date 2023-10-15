@@ -4,51 +4,64 @@ require "pry-rails"
 @current_attempt = []
 
 class Piece
-  attr_accessor :char, :sym, :coord
+  MAP_WIDTH = 5
+  MAP_HEIGHT = 5
   COORD_IDXS = { u: 0, r: 1, d: 2, l: 3 }
+  SYM_LIST = {
+    ur: "┗",
+    rd: "┏",
+    dl: "┓",
+    ul: "┛",
+    ud: "║",
+    rl: "═",
+    jn: "╋",
+  }
+  COORD_LIST = {
+    #   [u, r, d, l]
+    ur: [1, 1, 0, 0],
+    rd: [0, 1, 1, 0],
+    dl: [0, 0, 1, 1],
+    ul: [1, 0, 0, 1],
+    ud: [1, 0, 1, 0],
+    rl: [0, 1, 0, 1],
+    jn: [1, 1, 1, 1],
+  }
+  COORD_KEYS = COORD_LIST.keys
+  UPS = COORD_KEYS.select { |k| k.to_s.include?("u") }
+  DOWNS = COORD_KEYS.select { |k| k.to_s.include?("d") }
+  LEFTS = COORD_KEYS.select { |k| k.to_s.include?("l") }
+  RIGHTS = COORD_KEYS.select { |k| k.to_s.include?("r") }
+  FOLLOWS = COORD_KEYS.each_with_object({}) do |key, obj|
+    next obj[key] = COORD_KEYS if key == :jn
+    obj[key] = [:jn]
+    obj[key] << @downs if key.to_s.include?("d")
+    obj[key] << @ups if key.to_s.include?("u")
+    obj[key] << @lefts if key.to_s.include?("l")
+    obj[key] << @rights if key.to_s.include?("r")
+  end
 
   def initialize(char)
     @char = char
-    get_sym
-    get_coord
   end
 
-  def dir?(dir)
-    @coord[COORD_IDXS[dir]] == 1
-  end
+  def dir?(dir) = COORD_LIST[COORD_IDXS[dir]] == 1
   def u?; dir?(:u); end
   def r?; dir?(:r); end
   def d?; dir?(:d); end
   def l?; dir?(:l); end
 
-  def to_s
-    char
-  end
-
-  def get_sym
-    @sym = {
-      ur: "┗",
-      rd: "┏",
-      dl: "┓",
-      ul: "┛",
-      ud: "║",
-      rl: "═",
-      jn: "╋",
-    }.key(char)
-  end
-
-  def get_coord
-    @coord = {
-      #   [u, r, d, l]
-      ur: [1, 1, 0, 0],
-      rd: [0, 1, 1, 0],
-      dl: [0, 0, 1, 1],
-      ul: [1, 0, 0, 1],
-      ud: [1, 0, 1, 0],
-      rl: [0, 1, 0, 1],
-      jn: [1, 1, 1, 1],
-    }[@sym]
-  end
+  def to_s = char
+  def sym = SYM_LIST.key(@char)
+  def coord = COORD_LIST[sym]
+  #
+  # def allowed?(x, y)
+  #   return false if l? && x == 0
+  #   return false if r? && x == MAP_WIDTH-1
+  #   return false if u? && y == 0 && x != 0
+  #   return false if u? && y == MAP_HEIGHT-1
+  #
+  #   true
+  # end
 end
 
 @base = [
@@ -61,16 +74,20 @@ end
 @height = @base.length
 @width = @base.first.length
 
+@pieces = @base.flatten.map { |char| Piece.new(char) }
+
 available = []
 
 @base.each_with_index { |row, y|
   row.each_with_index { |char, x|
     piece = Piece.new(char)
-    next if piece.sym == :jn
+    next if piece.sym == :jn # Junctions cannot be moved?
     available << piece
     @base[y][x] = "." # Placeholder
   }
 }
+
+binding.pry
 
 def draw(map)
   puts ""
@@ -79,7 +96,7 @@ def draw(map)
 end
 
 def filter(left, match=true, dir)
-  left.select { |piece| piece.dir?(dir).then { |v| (match == :not || !match) ? !v : v } }
+  left.select { |piece| piece.dir?(dir).then { |v| !(match == :not || !match) } }
 end
 
 def add_bad_attempt(new_map)
@@ -181,4 +198,5 @@ def bruteforce(available)
   }
 end
 
-bruteforce(available)
+# Not currently working. Need to come up with a more efficient way
+# bruteforce(available)

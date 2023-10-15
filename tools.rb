@@ -8,7 +8,7 @@ class Tools
       pst("Tools.months_between(date1, date2)")
       pst("Tools.measure_block do ...")
       pst("Tools.measure_x_blocks(count=1000) do ...")
-      pst("Tools.pretty_json(\"{sup=>:foo}\")")
+      pst("Tools.pretty_json(\"{\"sup\"=> :foo}\")")
       pst("Tools.duration(2366)")
 
       super
@@ -29,6 +29,16 @@ class Tools
     end
     # count_each(%w( a a a b c b b a a c ))
     #=> {"a"=>5, "b"=>3, "c"=>2}
+
+    # Find the age based on the date
+    def age(dob)
+      require "date"
+
+      now = Time.now.to_date
+      dob = Date.parse(dob) if dob.is_a?(String)
+      now.year - dob.year - ((now.month > dob.month || (now.month == dob.month && now.day >= dob.day)) ? 0 : 1)
+    end
+    #=> 26
 
     # Count the number of months between 2 dates
     def months_between(date_str1, date_str2)
