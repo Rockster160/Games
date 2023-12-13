@@ -9,6 +9,16 @@ class SVG
     new(tag, opts, &block).open
   end
 
+  def self.write(tag, opts={}, &block)
+    new(tag, opts, &block).write
+  end
+
+  def self.register(method_name, &block)
+    define_method(method_name) do |attrs|
+      block.call(self, attrs)
+    end
+  end
+
   # Allows setting any attrs directly from the instance
   def method_missing(method, *args, &block)
     super unless method.to_s.end_with?("=")
@@ -24,7 +34,7 @@ class SVG
       self.stroke = :black
     end
     @tag = tag
-    @filename = opts[:filename] || :svg
+    @filename = (opts[:filename] || :svg).to_s.gsub(/\.svg$/, "")
     @content = opts[:content]
     @minx, @miny, @width, @height = opts[:minx] || 0, opts[:miny] || 0, opts[:width] || 100, opts[:height] || 100
     @items = []
@@ -38,8 +48,8 @@ class SVG
   def path(d, **attrs, &block)
     @items << SVG.new(:path, attrs: attrs.merge(d: d), &block)
   end
-  def text(str, x, y, **attrs, &block)
-    escaped = str.gsub("<", "&lt;").gsub(">", "&gt;")
+  def text(str, x, y, **attrs, &block) # https://developer.mozilla.org/en-US/docs/Web/SVG/Element/text
+    escaped = str.to_s.gsub("<", "&lt;").gsub(">", "&gt;")
     @items << SVG.new(:text, attrs: attrs.merge(x: x, y: y), content: escaped, &block)
   end
   def rect(x, y, width, height, **attrs, &block)
@@ -126,8 +136,12 @@ class SVG
     }
   end
 
-  def open
+  def write
     File.open("#{@filename}.svg", "w") { |file| file.write(to_svg) }
+  end
+
+  def open
+    write
     `open -a Safari '#{@filename}.svg' && sleep 1 && rm '#{@filename}.svg'`
   end
 end
