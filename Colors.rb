@@ -1,5 +1,6 @@
 require "pry-rails"
 # •█▒
+# 𓀠
 
 ## Style - Additional arg
 # 1 bold
@@ -28,6 +29,21 @@ require "pry-rails"
 # ESC[38;5;{ID}m	Set foreground color.
 # ESC[48;5;{ID}m	Set background color.
 
+# (0..7).each do |code|
+#   # Colors are done using "{escape}{style}{color}m" The "m" ends the escape code for the color args.
+#   esc = "\e[" # <-- This is an escape code, normally followed by a handful of special chars
+#   normal_style = "3" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+#   light_style = "9" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+#   normal_bg = "4" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+#   light_bg = "10" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+#   end_escape_sequence = "m"
+#   clear_code = "\e[0m" # Set the color back to "0" meaning reset all values
+#   print "#{esc}#{normal_style}#{code}#{end_escape_sequence}Yay color!#{clear_code}"
+#   print "#{esc}#{light_style}#{code}#{end_escape_sequence}-- Light --#{clear_code}"
+#   print "#{esc}#{normal_bg}#{code}#{end_escape_sequence} Yay background! #{clear_code}"
+#   print "#{esc}#{light_bg}#{code}#{end_escape_sequence} Light background! #{clear_code}"
+#   print "\n"
+# end
 
 def colorprint(str, *com)
   print "\e[#{com.join(';')}m#{str}\e[0m"

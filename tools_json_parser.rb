@@ -19,7 +19,9 @@ class ToolsJsonParser
     end
 
     def parse(ojson)
-      raw_json = ojson.to_s
+      JSON.parse(ojson)
+    rescue JSON::ParserError
+      raw_json = ojson.to_s.dup
       # token = gen_token(raw_json)
       # # ========== Convert Hashrocket to regular JSON ========
       # # -- Replace dates
@@ -34,18 +36,20 @@ class ToolsJsonParser
       raw_json.gsub!(/('[^']*')/) { |found| found.gsub(":", "\\u003A") }
 
       # Replace hashrockets with JSON format
-      raw_json.gsub!(/:(\w+)\s*=>/, '"\1":')
-      raw_json.gsub!(/"([^"]*)"\s*=>/, '"\1":')
-      raw_json.gsub!(/'([^']*)'\s*=>/, '"\1":')
+      raw_json.gsub!(/:(\w+)\s*=>/, '"\1": ') # :key =>
+      raw_json.gsub!(/"([^"]*)"\s*=>/, '"\1": ') # "key" =>
+      raw_json.gsub!(/'([^']*)'\s*=>/, '"\1": ') # 'key' =>
 
       # Convert symbolized keys to strings
-      raw_json.gsub!(/\b(\w+):/, '"\1":')
+      raw_json.gsub!(/\b(\w+):/, '"\1": ')
 
       # Convert symbolized values to strings
       raw_json.gsub!(/:(\w+)\b/, '"\1"')
       # raw_json.gsub!(token, "\"")
 
       JSON.parse(raw_json)
+    # rescue
+    #   require "pry-rails"; binding.pry
     end
 
     def color(color_sym, txt="")

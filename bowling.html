@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Example</title>
+  </head>
+<body>
+
+  <h1>Bowling Data</h1>
+
+<!-- <input type="text" id="messageInput" placeholder="Type a message..."> -->
+<!-- <button onclick="sendMessage()">Send Message</button> -->
+
+<ul id="messagesList"></ul>
+
+<script>
+  const socket = new WebSocket("wss://ws.lanetalk.com/ws");
+
+  let addMessage = function(msg) {
+    const messagesList = document.getElementById("messagesList");
+    const li = document.createElement("li");
+    li.textContent = msg;
+    messagesList.appendChild(li);
+  }
+
+  let send = function(json) {
+    socket.send(JSON.stringify(json))
+  }
+
+  // Connection opened
+  socket.addEventListener("open", (event) => {
+    addMessage("-- Opened --")
+    console.log("WebSocket connection opened:", event);
+    // NOCOMMIT
+    send({"id":"8cfe4a7c-a0f2-41a1-bf41-04fde6a3cfb1","method":0,"params":{"api_key":"8tLtPc8UwWvdvbpzRIr0ifCWy250TXUXrGUn"}})
+  });
+
+  // Listen for messages
+  socket.addEventListener("message", (event) => {
+    let json = JSON.parse(event.data)
+    if (json?.result?.result?.client) {
+      addMessage("-- Requesting --")
+      send({"id":"39d580b6-2e6e-4e7b-a8ef-b6c59a9923a0","method":1,"params":{"channel":"global_leagues"}})
+      setTimeout(function() {
+        send({"id":"462f816d-9350-4273-9540-5751f3a61d25","method":1,"params":{"channel":"LiveScores:2c211070-6bf9-11e8-8107-005056a558aa"}})
+      }, 500)
+      return
+    }
+    addMessage(event.data)
+  });
+
+  // Connection closed
+  socket.addEventListener("close", (event) => {
+    addMessage("-- Closed --")
+    console.log("WebSocket connection closed:", event);
+  });
+
+  // Handle errors
+  socket.addEventListener("error", (event) => {
+    addMessage("-- Error --")
+    console.error("WebSocket error:", event);
+  });
+
+  // Function to send a message
+  // function sendMessage() {
+  //   const messageInput = document.getElementById("messageInput");
+  //     const message = messageInput.value;
+  //
+  //     if (message.trim() !== "") {
+  //       socket.send(message);
+  //         messageInput.value = ""; // Clear the input field
+  //     }
+  // }
+  </script>
+</body>
+</html>

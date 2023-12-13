@@ -184,7 +184,7 @@ class Syncer
           headers: { Authorization: "Bearer #{@auth_token}" },
         )
         syncer = self
-        print "\e[33m.\e[0m"
+        puts "Connecting"
 
         @ws.on(:message) do |msg|
           syncer.receive(JSON.parse(msg.data, symbolize_names: true))
@@ -198,7 +198,7 @@ class Syncer
         # This loop keeps the script running
         loop do
           if @started && (!@connected || Time.now.to_i - @last_ping > 5)
-            print "\e[31m.\e[0m"
+            print "."
             sleep 1
             break
           end
@@ -209,7 +209,6 @@ class Syncer
       rescue StandardError => e
         # print "\e[31mx\e[0m"
         puts "\e[31mError: #{e.message}\e[0m"
-        binding.pry
         sleep 5 # Wait before attempting to reconnect
       end
     end
@@ -270,6 +269,12 @@ Syncer.run(
     "/Users/rocco/code/prm/*" => "/prm",
   }
 )
+
+# ===== Restart =====
+# ps aux | grep websocket
+# Find the pid, `kill` it. Will auto-restart.
+
+
 
 # 1. Create a Launch Agent
 # Create a .plist File:
