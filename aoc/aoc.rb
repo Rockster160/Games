@@ -43,13 +43,13 @@ if !File.exists?(txt) || File.size(txt) == 0
   File.open(txt, "w+") { |f|
     f.puts(::RestClient::Request.execute(
       method: :get,
-      url: "https://adventofcode.com/#{year}/day/#{today.day}/input",
+      url: "https://adventofcode.com/#{year}/day/#{day}/input",
       cookies: { session: ENV["aoccookie"] }
     ).body)
   }
   # TODO: Read and output the description/challenge as well
   # Or at least open it!
-  `open -a "Google Chrome" "https://adventofcode.com/#{year}/day/#{today.day}"`
+  `open -a "Google Chrome" "https://adventofcode.com/#{year}/day/#{day}"`
 end
 
 puts rb

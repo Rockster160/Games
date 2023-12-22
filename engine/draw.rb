@@ -125,7 +125,7 @@ module Draw
     unformat(str).chars.filter_map { |c| c.to_s.match?(/\p{Emoji_Presentation}/iu) ? 2 : 1 }.sum
   end
 
-  def format(text, length)
+  def format_draw(text, length)
     width = length || cell_width
     char_width = 2 if text.to_s.match?(/\p{Emoji_Presentation}/iu)
     char_width ||= ($special_chars[text] || 1)
@@ -134,7 +134,7 @@ module Draw
   end
 
   def draw(text, opts={})
-    format(text, opts[:width] || cell_width)
+    format_draw(text, opts[:width] || cell_width)
   end
 
   def draw_borders(board_arr, opts={})

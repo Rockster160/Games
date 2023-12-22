@@ -8,6 +8,7 @@ class Tools
       pst("Tools.months_between(date1, date2)")
       pst("Tools.measure_block do ...")
       pst("Tools.measure_x_blocks(count=1000) do ...")
+      pst("Tools.table([[:abc, 1], [:b, 2345]])")
       pst("Tools.pretty_json(\"{\"sup\"=> :foo}\")")
       pst("Tools.duration(2366)")
 
@@ -122,6 +123,23 @@ class Tools
     end
     def measure_x_blocks(count=10000, &block)
       count.times.map { measure_block(&block) }.sum / count.to_f
+    end
+
+    # Output array as a table
+    def uncolor(str) = str.to_s.gsub(/\e\[.*?m/, "")
+    def invisible_count(str) = str.to_s.scan(/\e\[[\d;]+m/).join.length
+    def table(array)
+      column_widths = array.transpose.map { |col| col.map { |cell| uncolor(cell).length }.max + 1 }
+      array.each do |row|
+        row.each_with_index do |cell, x|
+          clean = uncolor(cell)
+          just = x == 0 ? :ljust : :rjust
+          cell = cell.to_s&.tap { |s| s.gsub!(clean, clean[1..]) if clean[0] == ":" }
+          print " " unless x == 0
+          print clean.send(just, column_widths[x] + invisible_count(cell))
+        end
+        puts # Move to the next line after each row
+      end; nil
     end
 
     def pretty_json(raw_json)
