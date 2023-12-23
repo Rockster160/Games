@@ -9,6 +9,8 @@
 # open -a "Google Chrome" "https://bsaber.com/?s=NiceNiceNice"
 # open -a "Google Chrome" "https://bsaber.com/?s=Blue+Zenith"
 
+# cd to the current directory before running!
+
 def pst(msg, color: :grey)
   code = (
     case color
@@ -56,8 +58,10 @@ Dir["*/"].each do |song_file|
   end
 
   File.rename(song_file, filename)
-  system("mv '#{filename.gsub("'", "\\'")}' '#{song_file.gsub("'", "\\'")}'")
+  # system("mv '#{song_file.gsub("'", "\\'")}' '#{filename.gsub("'", "\\'")}'")
   puts "Renamed: #{song_file} -> #{filename}"
 rescue StandardError => e
   pst("mv[#{e.class}]#{e.message}", color: :red)
 end
+
+# Zip and transfer via Element
