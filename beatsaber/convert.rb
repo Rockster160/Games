@@ -11,6 +11,21 @@
 
 # cd to the current directory before running!
 
+def url_list(array)
+  [
+    "She Wants Me by The Happy Fits",
+  "Something Just Like This",
+  "Wake Me Up by Avicii",
+  "Determinate",
+  ].each { |str|
+    `open -a \"Google Chrome\" \"https://bsaber.com/?s=#{URI::Parser.new.escape(str)}\"`
+  }
+end
+
+def esc(filename)
+  filename.gsub(" ", "\\ ")
+end
+
 def pst(msg, color: :grey)
   code = (
     case color
@@ -42,7 +57,7 @@ Dir["*.zip"].each do |zip_file|
   system("unzip -q '#{zip_file.gsub("'", "\\'")}' -d '#{folder_name.gsub("'", "\\'")}'")
   File.delete(zip_file)
 
-  puts "Extracted: #{zip_file} -> #{folder_name}/"
+  puts "Extracted: #{zip_file} → #{folder_name}/"
 rescue StandardError => e
   pst("zip[#{e.class}]#{e.message}", color: :red)
 end
@@ -59,9 +74,18 @@ Dir["*/"].each do |song_file|
 
   File.rename(song_file, filename)
   # system("mv '#{song_file.gsub("'", "\\'")}' '#{filename.gsub("'", "\\'")}'")
-  puts "Renamed: #{song_file} -> #{filename}"
+  puts "Renamed: #{song_file} → #{filename}"
+rescue StandardError => e
+  pst("rename[#{e.class}]#{e.message}", color: :red)
+end
+
+Dir["**/"].each do |song_dir|
+  escaped = song_dir.gsub(" ", "\\ ")
+  if system("mv #{escaped} /Volumes/CustomLevels/#{escaped}")
+    pst("File moved to Windows: #{song_dir}")
+  else
+    pst("Failed to move #{song_dir}", color: :red)
+  end
 rescue StandardError => e
   pst("mv[#{e.class}]#{e.message}", color: :red)
 end
-
-# Zip and transfer via Element
