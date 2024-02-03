@@ -44,7 +44,14 @@ class ToolsJsonParser
       raw_json.gsub!(/\b(\w+):/, '"\1": ')
 
       # Convert symbolized values to strings
-      raw_json.gsub!(/:(\w+)\b/, '"\1"')
+      raw_json.gsub!(/[^\"]:([a-z]\w*)\b/i, '"\1"')
+      # Clear whitespace at beginning and end
+      raw_json.gsub!(/^\s*|\s*$/, "")
+      # ==================================================== Error?
+      # If there is a problem, it's probably here, adding escaped newlines in real json.
+      # Ideally this is only done inside of strings.
+      # Replace newlines
+      raw_json.gsub!("\n", "\\n")
       # raw_json.gsub!(token, "\"")
 
       JSON.parse(raw_json)

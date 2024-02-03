@@ -50,8 +50,8 @@ def colorprint(str, *com)
 end
 
 def all8bit
-  [3, 9].each { |pre| (0..7).each { |suf| colorprint("▒", (pre.to_s + suf.to_s).to_i) }; puts "" }
-  [4, 10].each { |pre| (0..7).each { |suf| colorprint(" ", (pre.to_s + suf.to_s).to_i) }; puts "" }
+  [3, 9].each { |pre| (0..7).each { |suf| print "\e[#{pre}#{suf}m#{pre}#{suf}\e[0m " }; puts "" }
+  [4, 10].each { |pre| (0..7).each { |suf| print "\e[#{pre}#{suf}m \e[0m" }; puts "" }
 end
 
 def printall

@@ -36,7 +36,7 @@ class DataManager
     @type = type
     @filename = File.join(__dir__, "#{@type}.json")
     begin
-      @old_data = JSON.parse(File.read(@filename), symbolize_names: true) if File.exists?(@filename)
+      @old_data = JSON.parse(File.read(@filename), symbolize_names: true) if File.exist?(@filename)
       @old_data ||= {}
     rescue JSON::ParserError
       @old_data = {}
@@ -173,6 +173,7 @@ now = Time.now
 # Only refresh at 3am each day -- this can take a long time to run.
 Contacts.update if now.hour == 3 && now.min === 0
 Calendar.update
-## Reminders.update
-## Notes.update
+
+### Reminders.update
+### Notes.update
 # puts Calendar.get
