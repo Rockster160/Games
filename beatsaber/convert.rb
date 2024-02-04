@@ -22,8 +22,10 @@ def url_list(array)
   }
 end
 
-def esc(filename)
-  filename.gsub(" ", "\\ ")
+def esc(original_filename)
+  escaped = original_filename.gsub(/[ \(\)\&\'\"\$\`\*\?\!\{\}\[\]\;\|\>\<\\]/) { |match| "\\" + "#{match}" }
+  *path, filename = escaped.gsub(/\/$/, "").split("/")
+  [path.join("/") + "/", filename]
 end
 
 def pst(msg, color: :grey)
@@ -40,52 +42,68 @@ def pst(msg, color: :grey)
   puts "\e[#{code}m#{msg}\e[0m"
 end
 
-# Iterate through zip files in the current directory
-Dir["*.zip"].each do |zip_file|
-  folder_name = zip_file.match(/^(.*)\.zip$/)[1]
+def unzip(path, folder)
+  old_filepath = [path, folder].join("")
+  folder_name = folder.match(/^(.*)\.zip$/i).to_a[1]
 
-  if File.directory?(folder_name)
-    File.delete(zip_file)
-    pst "Unzipped already exists: #{folder_name}. Deleting #{zip_file}"
-    next
+  new_filepath = [path, folder_name].join("")
+  if folder_name.nil?
+    return [path, folder]
+  elsif File.directory?(new_filepath)
+    File.delete(old_filepath)
+    pst "Unzipped already exists: #{folder_name}. Deleting #{folder}"
+    return [path, folder_name]
   end
 
   # Create a folder with the extracted name
-  Dir.mkdir(folder_name)
-
+  system("mkdir #{new_filepath}")
   # Extract the contents of the zip file into the created folder
-  system("unzip -q '#{zip_file.gsub("'", "\\'")}' -d '#{folder_name.gsub("'", "\\'")}'")
-  File.delete(zip_file)
+  system("unzip -q #{old_filepath} -d #{new_filepath}")
+  # Remove the old zipfile
+  system("rm #{old_filepath}")
 
-  puts "Extracted: #{zip_file} → #{folder_name}/"
+  pst "Extracted: #{folder} → #{folder_name}"
+  return [path, folder_name]
 rescue StandardError => e
   pst("zip[#{e.class}]#{e.message}", color: :red)
 end
 
-Dir["*/"].each do |song_file|
-  filename = song_file.match(/^[\w]{3,6} \((.*?)\)\/$/).to_a[1]
-  next if filename.nil?
+def correct_filename(path, folder)
+  filename = folder.match(/^[\w]{3,6} \((.*?)\)\/?$/).to_a[1]
+  return [path, folder] if filename.nil?
 
-  if File.directory?(filename)
-    pst "File already exists: #{filename}. Deleting #{song_file}"
-    system("rm -r '#{song_file.gsub("'", "\\'")}'")
-    next
+  new_filepath = [path, filename].join("")
+  if File.directory?(new_filepath)
+    pst "File already exists: #{new_filepath}. Deleting #{folder}"
+    system("rm -r #{new_filepath}")
+    return [path, filename]
   end
 
-  File.rename(song_file, filename)
-  # system("mv '#{song_file.gsub("'", "\\'")}' '#{filename.gsub("'", "\\'")}'")
-  puts "Renamed: #{song_file} → #{filename}"
+  old_filepath = [path, folder].join("")
+  # File.rename(folder, new_filepath)
+  system("mv #{old_filepath} #{new_filepath}")
+  pst "Renamed: #{folder} → #{filename}"
+  return [path, filename]
 rescue StandardError => e
   pst("rename[#{e.class}]#{e.message}", color: :red)
 end
 
-Dir["**/"].each do |song_dir|
-  escaped = song_dir.gsub(" ", "\\ ")
-  if system("mv #{escaped} /Volumes/CustomLevels/#{escaped}")
-    pst("File moved to Windows: #{song_dir}")
+def transfer(path, folder)
+  filepath = [path, folder].join("")
+
+  # "/Users/rocco/Downloads/TWENTY\\ TWENTY\\ -\\ Jonas_0_0,\\ minsiii"
+  if system("mv #{filepath} /Volumes/CustomLevels/#{folder}")
+    pst("File moved to Windows: #{folder}")
   else
-    pst("Failed to move #{song_dir}", color: :red)
+    pst("Failed to move #{folder}", color: :red)
   end
+
+  return [path, folder]
 rescue StandardError => e
   pst("mv[#{e.class}]#{e.message}", color: :red)
 end
+
+folders = ARGV.map { |folder| esc(folder) }
+unzipped = folders.filter_map { |path, folder| unzip(path, folder) }
+corrected = unzipped.filter_map { |path, folder| correct_filename(path, folder) }
+corrected.filter_map { |path, folder| transfer(path, folder) }
