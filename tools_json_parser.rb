@@ -54,7 +54,7 @@ class ToolsJsonParser
       raw_json.gsub!("\n", "\\n")
       # raw_json.gsub!(token, "\"")
 
-      JSON.parse(raw_json)
+      raw_json.empty? ? "\e[90mnull\e[0m" : JSON.parse(raw_json)
     # rescue
     #   require "pry-rails"; binding.pry
     end

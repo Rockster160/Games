@@ -29,6 +29,8 @@ require "pry-rails"
 # ESC[38;5;{ID}m	Set foreground color.
 # ESC[48;5;{ID}m	Set background color.
 
+# rgb(1,96,255)
+
 # (0..7).each do |code|
 #   # Colors are done using "{escape}{style}{color}m" The "m" ends the escape code for the color args.
 #   esc = "\e[" # <-- This is an escape code, normally followed by a handful of special chars
