@@ -5,17 +5,17 @@ class SVG
     :items,
   )
 
-  def self.open(tag, opts={}, &block)
+  def self.open(tag=:svg, opts={}, &block)
     new(tag, opts, &block).open
   end
 
-  def self.write(tag, opts={}, &block)
+  def self.write(tag=:svg, opts={}, &block)
     new(tag, opts, &block).write
   end
 
   def self.register(method_name, &block)
-    define_method(method_name) do |attrs|
-      block.call(self, attrs)
+    define_method(method_name) do |*attrs|
+      block.call(self, *attrs)
     end
   end
 
@@ -67,10 +67,24 @@ class SVG
   def line(x1, y1, x2, y2, **attrs, &block)
     @items << SVG.new(:line, attrs: attrs.merge(x1: x1, y1: y1, x2: x2, y2: y2), &block)
   end
-  def ellipse(cx, cy, rx, ry, r, **attrs, &block)
+  def ellipse(cx, cy, rx, ry, **attrs, &block)
     @items << SVG.new(:ellipse, attrs: attrs.merge(cx: cx, cy: cy, rx: rx, ry: ry), &block)
   end
   def polyline(*points, **attrs, &block)
+    block_called = false
+    points = points.presence || block.call.then { |block_points|
+      next block_points if block_points.is_a?(String)
+      next unless block_points.is_a?(Array)
+
+      block_points.filter_map { |block_point|
+        case block_point
+        when String then block_point
+        when Array then block_point.join(",")
+        when Hash then "#{block_point[:x]},#{block_point[:y]}"
+        end
+      }.join(" ")
+    }&.tap { block_called = true }
+    block = nil if block_called
     @items << SVG.new(:polyline, attrs: attrs.merge(points: points), &block)
   end
   def polygon(*points, **attrs, &block)
@@ -142,7 +156,8 @@ class SVG
 
   def open
     write
-    `open -a Safari '#{@filename}.svg' && sleep 1 && rm '#{@filename}.svg'`
+    default_browser = `defaults read com.apple.LaunchServices/com.apple.launchservices.secure LSHandlers | sed -n -e "/LSHandlerURLScheme = https;/{x;p;d;}" -e 's/.*=[^"]"\\(.*\\)";/\\1/g' -e x`.strip
+    `open -b #{default_browser} '#{@filename}.svg' && sleep 2 && rm '#{@filename}.svg'`
   end
 end
 

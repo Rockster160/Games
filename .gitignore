@@ -18,3 +18,5 @@ comcast_data_scraper.rb
 page_login.rb
 scraper.rb
 **/*.log
+*hideit*
+*.env

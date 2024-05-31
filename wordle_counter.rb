@@ -1,22 +1,25 @@
-filename = "/Users/rocco/imessage_export/Hype\ in\ the\ Chat🤪\ -\ 2.txt"
-if ENV["USE_CACHE"].nil? && !File.file?(filename)
+dir = "/Users/rocco/imessage_export"
+filename = Dir.entries(dir).find { |file| file.include?("Hype in the Chat") }
+if ENV["USE_CACHE"].nil? || !File.file?(filename)
+  puts "Resetting cache!"
   puts `rm -rf /Users/rocco/imessage_export; imessage-exporter -f txt`
 end
 
 require "/Users/rocco/code/games/message_parser.rb"
 
-Message.from_file(filename)
+Message.from_file("#{dir}/#{filename}")
 messages = Message.messages
 
-wordles = messages.select { |m| m.body.match?(/Wordle \d{1,3} \d\/6/) }
+wordles = messages.select { |m| m.body.match?(/Wordle [\d,]*.*?[\dX]\/6/) }
 author_wordles = { Rocco: [], Saya: [], Brendan: [] }
 author_scores = { Rocco: [], Saya: [], Brendan: [] }
 grouped_scores = wordles.each_with_object({}) do |m, data|
-  match = m.body.match(/Wordle (?<day>\d{1,3}) (?<score>\d)\/6/)
+  match = m.body.match(/Wordle (?<day>[\d,]*).*?(?<score>[\dX])\/6/)
+  score = match[:score] == "X" ? 7 : match[:score].to_i
   author_wordles[m.author] << m
-  author_scores[m.author] << match[:score].to_i
+  author_scores[m.author] << score
   data[match[:day]] ||= {}
-  data[match[:day]][m.author] = match[:score].to_i
+  data[match[:day]][m.author] = score
 end
 # {"219"=>{"Saya"=>4},
 #  "221"=>{"Saya"=>4},
@@ -59,6 +62,8 @@ wins.sort_by { |k,v| -v }.each do |win, count|
     puts "#{win} won #{count} times"
   end
 end
+puts "Last day: #{grouped_scores.keys.max { |day| day.gsub(/[^\d]/, "").to_i }}"
+# require "pry-rails"; binding.pry
 # Rocco won 136 times
 # Brendan won 34 times
 # Saya won 135 times
@@ -66,6 +71,18 @@ end
 # Brendan, Saya tied 18 times
 # Rocco, Saya tied 130 times
 # Brendan, Rocco tied 15 times
+
+# puts grouped_scores.to_a.sort_by { |day_str, data| -day_str.gsub(/[^\d]/, "").to_i }.first(20).map { |day_str, data| "#{day_str} | Saya: #{data[:Saya] || "-"} | Rocco: #{data[:Rocco] || "-"}" }
+
+
+# class String
+#   def with_delim
+#     self.gsub(/\B(?=(...)*\b)/, ',')
+#   end
+# end
+# (219..1026).each
+
+
 
 
 # failed_wordles = messages.select { |m| m.body.match?(/Wordle \d{1,3} X\/6/) }

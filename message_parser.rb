@@ -1,6 +1,5 @@
 # rm -rf /Users/rocco/imessage_export; imessage-exporter -f txt
 # Message.from_file("/Users/rocco/imessage_export/Hype\ in\ the\ Chat🤪\ -\ 2.txt")
-# Message.from_file("/Users/rocco/imessage_export/Melanie\ Jensen.txt")
 # messages = Message.messages
 
 require "pry-rails"

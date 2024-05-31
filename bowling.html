@@ -1,3 +1,5 @@
+<!-- TODO: This is broken because it uses ENV - should include bowling.env vars in order to use -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -32,8 +34,7 @@
   socket.addEventListener("open", (event) => {
     addMessage("-- Opened --")
     console.log("WebSocket connection opened:", event);
-    // NOCOMMIT
-    send({"id":"8cfe4a7c-a0f2-41a1-bf41-04fde6a3cfb1","method":0,"params":{"api_key":"8tLtPc8UwWvdvbpzRIr0ifCWy250TXUXrGUn"}})
+    send({"id":ENV["LANETALK_OPEN_ID"],"method":0,"params":{"api_key":ENV["LANETALK_API_KEY"]}})
   });
 
   // Listen for messages
@@ -41,9 +42,9 @@
     let json = JSON.parse(event.data)
     if (json?.result?.result?.client) {
       addMessage("-- Requesting --")
-      send({"id":"39d580b6-2e6e-4e7b-a8ef-b6c59a9923a0","method":1,"params":{"channel":"global_leagues"}})
+      send({"id":ENV["LANETALK_REQUEST_UUID"],"method":1,"params":{"channel":"global_leagues"}})
       setTimeout(function() {
-        send({"id":"462f816d-9350-4273-9540-5751f3a61d25","method":1,"params":{"channel":"LiveScores:2c211070-6bf9-11e8-8107-005056a558aa"}})
+        send({"id":ENV["LANETALK_SUBSCRIBE_UUID"],"method":1,"params":{"channel":"LiveScores:#{ENV["LANETALK_CHANNEL"]}"}})
       }, 500)
       return
     }

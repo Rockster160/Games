@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Points and Lines</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #300000;
+    color: #999;
+  }
+  p {
+    text-align: center;
+  }
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+</head>
+<body>
+  <p>
+    Mouse:
+    X:<span id="mouse-x"></span>
+    Y:<span id="mouse-y"></span>
+  </p>
+  <canvas id="chart"></canvas>
+
+  <script>
+    const ctx = document.getElementById('chart').getContext('2d');
+    class Point {
+      static new(title, x, y, color) { return { title, x, y, color } }
+      static list(points) { return points.map(point => Point.new(...point)) }
+    }
+    class Line {
+      static new(title, color, points) { return { title, color, points } }
+      static list(lines) { return lines.map(line => Line.new(...line)) }
+    }
+
+    // let points = Point.list([
+    //   ['Origin',     0,     0, "#00000055"],
+    //   ['Spawn',   -120,   -40, "#ADD8E6"],
+    //   ['Spawn Home',   27,   98, "#ADD8E6"],
+    //   ['Spawn Portal',   -5,   -47, "#ADD8E6"],
+    //   ['Home',     878,  -885, "#0160FF"],
+    //   ['Mesa',    -586,  1533, "#FFCE56"],
+    //   ['Swamp',   3577, -1932, "#748500"],
+    //   ['Shelby', -3030,  2262, "#FF6384"],
+    // ]);
+    let points = Point.list([
+      ['Origin',          0,     0, "#00000070"],
+      ['Spawn',         -15,    -5, "#FFF"],
+      ['Home',          107,  -124, "#0160FF"],
+      ['Mesa',          -72,   198, "#FFCE56"],
+      ['Swamp',         440,  -242, "#748500"],
+      ['Fortress',     -230,   477, "#800000"],
+      ['Blaze',        -275,   365, "#E3D654"],
+      ['Bastion',       -25,   567, "#777"], // Y:65
+      ['Warped Forest', -43,   800, "#16615B"], // Y:58
+      ['Shelby',       -379,   281, "#FF6384"],
+    ]);
+    let lines = Line.list([
+      ["Home", "#A00", [[112, -123]]], // Y:12
+      ["Home → Mesa", "#F99", [[84, -125], [-78, -125], [-78, 217]]], // Y:115
+      ["Home → Spawn", "#F99", [[50, -126], [-16, -126], [-16, -8]]], // Y:57
+      ["Spawn → Tunnels", "#DDD", [[-16,-6], [89,124]]],
+      ["Tunnel", "#A00", [[89,68], [89,499]]],
+      ["Tunnel → Bastion", "#DDD", [[89,499], [-25,567]]],
+      ["Bastion → Fortress", "#DDD", [[-25,567], [-230,477]]],
+      ["", "#A00", [[89,304], [-276,304], [-276,367]]],
+      ["", "#A00", [[-73,224], [-73,460], [-47,460], [-47,479], [-43,479], [-43,800]]],
+      ["Home", "#A00", [[112,-124], [89,-124], [89,70]]],
+      ["Shelby", "#A00", [[-380,281], [-380,304], [-275,304]]],
+      ["Swamp", "#A00", [[440,-240], [89,-240], [89,-124]]],
+      // [[], []],
+      // [[0, 0], [0, 500]],
+    ])
+
+    const data = {
+      datasets: points.map(point => {
+        return {
+          data: [{ x: point.x, y: point.y }],
+          label: [point.title],
+          borderColor: point.color,
+          backgroundColor: point.color,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+        }
+      })
+    };
+
+    lines.forEach((line, index) => {
+      data.datasets.push({
+        data: line.points.map(point => {
+          return  { x: point[0], y: point[1] }
+        }),
+        type: 'line',
+        borderColor: line.color,
+        borderWidth: 2,
+        fill: false,
+        showLine: true,
+        radius: 0,
+      });
+    });
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        // padding: 50,
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          position: 'top',
+          grid: { color: "#333" },
+          ticks: {
+            stepSize: 16,
+          },
+        },
+        y: {
+          type: 'linear',
+          reverse: true,
+          grid: { color: "#333" },
+          ticks: {
+            stepSize: 16,
+          },
+        }
+      },
+      plugins: {
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true,
+            },
+            mode: 'xy'
+          },
+          pan: {
+            enabled: true,
+            mode: 'xy',
+            dragData: true
+          }
+        },
+        legend: {
+          display: false
+        }
+      },
+    };
+
+    const chart = new Chart(ctx, {
+      type: 'scatter',
+      data: data,
+      options: options
+    });
+    const canvas = chart.canvas;
+    canvas.addEventListener('mousemove', (event) => {
+      const { left, top, width, height } = chart.chartArea;
+      const xAxis = chart.scales.x
+      const yAxis = chart.scales.y
+
+      const ratioX = (event.clientX - canvas.getBoundingClientRect().left - left) / width;
+      const ratioY = (event.clientY - canvas.getBoundingClientRect().top - top) / height;
+
+      const xValue = xAxis.getValueForPixel(left + ratioX * width);
+      const yValue = yAxis.getValueForPixel(top + ratioY * height);
+
+      document.querySelector("#mouse-x").innerText = Math.floor(xValue);
+      document.querySelector("#mouse-y").innerText = Math.floor(yValue);
+    });
+  </script>
+</body>
+</html>

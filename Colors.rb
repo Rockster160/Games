@@ -5,6 +5,7 @@ require "pry-rails"
 ## Style - Additional arg
 # 1 bold
 # 4 underline
+# 3 italic
 # 7 invert
 
 ## Color - Suffix

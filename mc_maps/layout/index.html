@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #003000;
+    color: #999;
+  }
+  body.overworld {
+    background: #003000;
+  }
+  body.nether {
+    background: #300000;
+  }
+  body.end {
+    background: #303030;
+  }
+  p {
+    text-align: center;
+  }
+  #chartContainer {
+    width: 100%;
+    height: 0;
+    padding-bottom: calc(100% + 200px);
+    position: relative;
+  }
+  #chart {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% + 200px);
+  }
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+  .float-left {
+    float: left;
+  }
+  a {
+    color: #999;
+    padding-left: 10px;
+  }
+</style>
+</head>
+<body>
+  <p>
+    <span class="float-left">
+      <a target="_blank" href="./overworld.js">Overworld</a>
+      <a target="_blank" href="./nether.js">Nether</a>
+      <a target="_blank" href="./end.js">End</a>
+    </span>
+    Mouse:
+    X:<span id="mouse-x"></span>
+    Y:<span id="mouse-y"></span>
+  </p>
+  <div id="chartContainer">
+    <canvas id="chart"></canvas>
+  </div>
+  <script type="text/javascript">
+    let world = "overworld", points = [], lines = []
+    class Point {
+      static new(title, x, y, z, color) { return { title, x, y, z, color } }
+      static list(points) { return points.map(point => Point.new(...point)) }
+    }
+    class Line {
+      static new(title, color, y, points) { return { title, color, y, points } }
+      static list(lines) { return lines.map(line => Line.new(...line)) }
+    }
+  </script>
+  <div id="script-placeholder"></div>
+  <script>
+    const ctx = document.getElementById('chart').getContext('2d');
+    const gridColor = world == "nether" ? "#333" : "#666"
+    document.querySelector("body").classList.add(world)
+
+    const data = {
+      datasets: points.map(point => {
+        return {
+          data: [{ x: point.x, y: point.z }],
+          label: [point.title],
+          borderColor: point.color,
+          backgroundColor: point.color,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+        }
+      })
+    };
+
+    lines.forEach((line, index) => {
+      data.datasets.push({
+        data: line.points.map(point => {
+          return  { x: point[0], y: point[1] }
+        }),
+        type: 'line',
+        borderColor: line.color,
+        borderWidth: 2,
+        fill: false,
+        showLine: true,
+        radius: 0,
+      });
+    });
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
+      layout: {
+        // padding: 50,
+      },
+      scales: {
+        x: {
+          padding: 50,
+          type: 'linear',
+          position: 'top',
+          grid: { color: gridColor },
+          ticks: {
+            stepSize: 16,
+          },
+        },
+        y: {
+          type: 'linear',
+          reverse: true,
+          grid: { color: gridColor },
+          ticks: {
+            stepSize: 16,
+          },
+        }
+      },
+      plugins: {
+        zoom: {
+          zoom: {
+            wheel: {
+              enabled: true,
+            },
+            mode: 'xy'
+          },
+          pan: {
+            enabled: true,
+            mode: 'xy',
+            dragData: true
+          }
+        },
+        legend: {
+          display: false
+        }
+      },
+    };
+
+    const chart = new Chart(ctx, {
+      type: 'scatter',
+      data: data,
+      options: options
+    });
+    setTimeout(() => {
+      chart.zoom(0.1)
+    }, 10)
+    const canvas = chart.canvas;
+    canvas.addEventListener('mousemove', (event) => {
+      const { left, top, width, height } = chart.chartArea;
+      const xAxis = chart.scales.x
+      const yAxis = chart.scales.y
+
+      const ratioX = (event.clientX - canvas.getBoundingClientRect().left - left) / width;
+      const ratioY = (event.clientY - canvas.getBoundingClientRect().top - top) / height;
+
+      const xValue = xAxis.getValueForPixel(left + ratioX * width);
+      const yValue = yAxis.getValueForPixel(top + ratioY * height);
+
+      document.querySelector("#mouse-x").innerText = Math.floor(xValue);
+      document.querySelector("#mouse-y").innerText = Math.floor(yValue);
+    });
+  </script>
+</body>
+</html>

@@ -1,8 +1,8 @@
 require "websocket-client-simple"
 require "json"
 
-def present(data)
-  data&.inspect&.gsub(/:(\w+)=>/, '\1: ')
+def present(hash)
+  hash&.inspect&.gsub(/:(\w+)=>/, '\1: ')
 end
 
 class CableWebsocket
@@ -19,7 +19,7 @@ class CableWebsocket
     @ws = WebSocket::Client::Simple.connect(@url, headers: @headers)
 
     @ws.on(:open) do
-      puts "[Connected to server]"
+      puts "[Connected to ActionCable server]"
     end
 
     @ws.on(:message) do |message|
@@ -42,43 +42,51 @@ class CableWebsocket
     loop do
       input = gets.chomp
       break if input.downcase == "exit"
+      next unless [:open, :closed, :between].include?(input.to_sym)
 
       @state = input
       broadcast({ action: :receive, state: @state })
     end
 
+    puts "[Done]"
+
     # Close the connection when done
     @ws.close
-    puts "[Done]"
   end
 
-  def broadcast(data=nil)
-    puts "\e[36m→\e[90m #{present(data)}\e[0m"
+  def broadcast(data=nil, command: :message)
+    puts "\e[36m→\e[90m #{present(data) || command}\e[0m"
+    packet = {
+      command: command,
+      identifier: JSON.dump(channel: :SocketChannel, channel_id: :garage, user_id: 1)
+    }
+    packet.merge!({ data: JSON.dump(data) }) unless data.nil?
 
-    @ws.send(JSON.dump(data))
+    @ws.send(JSON.dump(packet))
   end
 
   def receive(message)
-    puts "\e[33m←\e[90m #{present(message)}\n#{present(message.data)}\e[0m"
-    print "\a"
-    # data = JSON.parse(message.data, symbolize_names: true)
-    # puts "\e[33m←\e[90m #{present(data)}\e[0m" #unless data.dig(:type).to_s.to_sym == :ping
+    data = JSON.parse(message.data, symbolize_names: true)
+    puts "\e[33m←\e[90m #{present(data)}\e[0m" unless data.dig(:type).to_s.to_sym == :ping
     case data.dig(:type).to_s.to_sym
     when :ping
-      puts "Ping!"
       @last_ping = data[:message]
       @spinner.tick
-      broadcast({ action: :pong })
       return
-    # when :disconnect
-    #   puts "\e[31m[DISCONNECTED]\e[0m"
-    #   @ws.close
-    # else
-    #   if data.dig(:message, :request) == "get"
-    #     broadcast({ action: :receive, state: @state })
-    #   else
-    #     puts "Unknown Message: #{data}"
-    #   end
+    when :welcome
+      broadcast(command: :subscribe)
+    when :confirm_subscription
+      puts "[Fully connected]"
+      broadcast({ action: :receive, state: :closed })
+    when :disconnect
+      puts "\e[31m[DISCONNECTED]\e[0m"
+      @ws.close
+    else
+      if data.dig(:message, :request) == "get"
+        broadcast({ action: :receive, state: @state })
+      else
+        puts "Unknown Message: #{data}"
+      end
     end
   end
 end
@@ -91,19 +99,19 @@ class Spinner
   end
 end
 
-class Receiver
-end
 
 
 if $0 == __FILE__ # This script is being run directly from the command line
-  # require "base64"
+  require "base64"
   # auth_token = Base64.encode64("Rockster160:#{ENV["LOCAL_ME_PASS"]}").strip
+  auth = "rocco11nicholls@gmail.com:#{ENV["LOCAL_ME_PASS"]}"
+  auth_token = Base64.encode64(auth).strip
   # server_url = "wss://ardesian.com/cable"
   # server_url = "ws://localhost:3141/cable"
-  # authorization = "Basic #{auth_token}"
+  server_url = "ws://localhost:3315/cable"
+  authorization = "Basic #{auth_token}"
 
-  CableWebsocket.new(server_url).connect
-  # CableWebsocket.new(server_url, headers: { Authorization: authorization }).connect
+  CableWebsocket.new(server_url, headers: { Authorization: authorization }).connect
 else # This script is being required in another script
   puts "This script is being required."
 end

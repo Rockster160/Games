@@ -14,9 +14,9 @@
 def url_list(array)
   [
     "She Wants Me by The Happy Fits",
-  "Something Just Like This",
-  "Wake Me Up by Avicii",
-  "Determinate",
+    "Something Just Like This",
+    "Wake Me Up by Avicii",
+    "Determinate",
   ].each { |str|
     `open -a \"Google Chrome\" \"https://bsaber.com/?s=#{URI::Parser.new.escape(str)}\"`
   }
