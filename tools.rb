@@ -1,5 +1,5 @@
 require "/Users/rocco/code/games/tools_json_parser"
-
+require "/Users/rocco/code/games/to_table.rb"
 
 class Tools
   class << self
@@ -170,6 +170,18 @@ class Tools
 
         durations << "#{count}#{time}"
       end.join(" ")
+    end
+
+    # Default just aligns each row with ljust
+    # This will PRINT the table as well as return the string!
+    def table(rows_array, **opts)
+      # TODO: opts[:csv] <bool> - returns csv string (newlines and commas)
+      # TODO: opts[:ascii] <bool> - shows borders
+      # TODO: opts[:only_return] <bool> - returns string, does NOT print
+      # TODO: opts[:only_print] <bool> - prints table, returns nil
+      # TODO: Should be able to pass options to align each column differently
+      # TODO: If rows_array is an array of hashes, use the keys as headers
+      ToTable.show(rows_array)
     end
   end
 end

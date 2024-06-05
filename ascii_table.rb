@@ -1,4 +1,20 @@
+# TODO: Colorize should be a refinement
 require "/Users/rocco/code/games/engine/colorize"
+# module Colorize
+#   refine String do
+#     def colorize(...)
+#       whatever
+#     end
+#   end
+# end
+#
+# class AsciiTable
+#   using Colorize
+#
+#   def something
+#     puts "hello".colorize(:red)
+#   end
+# end
 
 class AsciiTable
   attr_accessor :rows, :width, :sizes, :padding
