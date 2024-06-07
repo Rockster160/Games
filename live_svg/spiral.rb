@@ -1,5 +1,5 @@
 # svgwatcher /Users/rocco/code/games/live_svg/svg.rb
-require "/Users/rocco/code/games/svg.rb"
+require "ruby-svg"
 
 # SVG
 #   svg.g(**attrs, &block)

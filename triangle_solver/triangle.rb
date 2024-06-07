@@ -1,5 +1,5 @@
 require "/Users/rocco/code/games/engine/draw.rb"
-require "/Users/rocco/code/games/svg.rb"
+require "ruby-svg"
 
 require_relative "triangle_helpers"
 require_relative "draw_triangle"

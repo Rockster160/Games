@@ -1,5 +1,5 @@
 # svgwatcher /Users/rocco/code/games/live_svg/svg.rb
-require "/Users/rocco/code/games/svg.rb"
+require "ruby-svg"
 
 # SVG
 #   svg.g(**attrs, &block)
@@ -42,6 +42,13 @@ require "/Users/rocco/code/games/svg.rb"
 #
 #   svg.path(path.join(" "), **attrs)
 # end
+
+SVG.register(:point) do |svg, attrs|
+  attrs[:fill] ||= svg.stroke || :black
+  attrs[:stroke] ||= svg.fill || :none
+
+  svg.circle(**attrs.merge(cx: x, cy: y, r: r))
+end
 
 SVG.register(:bezier) do |svg, attrs|
   p1, b1, b2, p2 = attrs.slice(:p1, :b1, :b2, :p2).values
