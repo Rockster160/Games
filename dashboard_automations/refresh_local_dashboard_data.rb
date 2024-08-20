@@ -177,3 +177,12 @@ Calendar.update
 ### Reminders.update
 ### Notes.update
 # puts Calendar.get
+
+# Just a regular ping to update ip addresses
+if now.min % 5 == 0
+  ["https://ardesian.com/webhooks/local_ping", "http://localhost:3141/webhooks/local_ping"].each do |url|
+    headers = { "Authorization": "Basic #{ENV['PORTFOLIO_AUTH']}" }
+    ::RestClient.post(url, {}, headers)
+  rescue StandardError => e
+  end
+end
