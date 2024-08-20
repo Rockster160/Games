@@ -48,6 +48,33 @@ require "pry-rails"
 #   print "\n"
 # end
 
+# {
+#   black:         30,
+#   light_black:   90,
+#   red:           31,
+#   light_red:     91,
+#   green:         32,
+#   light_green:   92,
+#   yellow:        33,
+#   light_yellow:  93,
+#   blue:          34,
+#   light_blue:    94,
+#   magenta:       35,
+#   light_magenta: 95,
+#   cyan:          36,
+#   light_cyan:    96,
+#   white:         37,
+#   light_white:   97,
+# }.map { |color, val|
+#   color = color.to_s.gsub("light_", "l.")
+#   [
+#     "\e[#{val+10}m\e[37m#{color.center(10)}", # light text, color bg
+#     "\e[#{val+10}m\e[30m#{color.center(10)}", # dark text, color bg
+#     "\e[#{val}m\e[47m#{color.center(10)}", # white bg, color text
+#     "\e[#{val}m\e[40m#{color.center(10)}", # dark bg, color text
+#   ].join("")
+# }.join("\n").then { |s| PrettyLogger.info("\n" + s) }
+
 def colorprint(str, *com)
   print "\e[#{com.join(';')}m#{str}\e[0m"
 end
