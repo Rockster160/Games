@@ -25,8 +25,8 @@ class ProgressBar
     empty = width - filled
 
     show_bar = "[#{'='*filled}#{' '*empty}]"
-    show_percent = "#{percent.round.to_s.ljust(3, " ")}%"
-    show_progress = "#{@current.to_s.ljust(total.to_s.length)}/#{total}"
+    show_percent = "#{(percent*100).floor.to_s.rjust(3, " ")}%"
+    show_progress = "#{@current.to_s.rjust(total.to_s.length)}/#{total}"
     print "\r#{show_bar} #{show_percent} #{show_progress}"
   end
 end
