@@ -47,21 +47,23 @@ class Message
   @@messages = []
   def self.messages = @@messages
 
-  def self.from_file(filename)
-    raw = File.read(filename)
-    split = raw.split(/\n{2,}/)
-    total_count = split.length
-    bar = ProgressBar.new(total_count)
-    while split.length > 0
-      msg = []
-      loop do
-        msg << split.shift
-        bar.increment
-        break if split.empty? || split.first.start_with?(DATE_REGEX)
+  def self.from_file(*filenames)
+    filenames.each do |filename|
+      raw = File.read(filename)
+      split = raw.split(/\n{2,}/)
+      total_count = split.length
+      bar = ProgressBar.new(total_count)
+      while split.length > 0
+        msg = []
+        loop do
+          msg << split.shift
+          bar.increment
+          break if split.empty? || split.first.start_with?(DATE_REGEX)
+        end
+        add(msg.join("\n\n"))
       end
-      add(msg.join("\n\n"))
+      puts # for bar
     end
-    puts # for bar
     self
   end
 
