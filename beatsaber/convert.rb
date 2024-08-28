@@ -1,15 +1,9 @@
 #!/usr/bin/env ruby
 
-# open -a "Google Chrome" "https://bsaber.com/?s=Iridium"
-# open -a "Google Chrome" "https://bsaber.com/?s=Arcade+Busters"
-# open -a "Google Chrome" "https://bsaber.com/?s=Majesty"
-# open -a "Google Chrome" "https://bsaber.com/?s=Dire+Dire+Docks"
-# open -a "Google Chrome" "https://bsaber.com/?s=YYZ"
-# open -a "Google Chrome" "https://bsaber.com/?s=Chinese+Restaurant"
-# open -a "Google Chrome" "https://bsaber.com/?s=NiceNiceNice"
-# open -a "Google Chrome" "https://bsaber.com/?s=Blue+Zenith"
+# Finder → Locations → Network → zoropc → connect → username:"owner"
+# cd to the current (downloads) directory before running!
 
-# cd to the current directory before running!
+# open -a "Google Chrome" "https://bsaber.com/?s=Iridium"
 
 def url_list(array)
   [
