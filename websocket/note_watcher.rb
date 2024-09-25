@@ -45,7 +45,7 @@ class WatchedDirectory
   end
 
   def checkall
-    return unless @pulled # Don't push files until we're checked the server for what it has
+    return unless @pulled # Don't push files until we've checked the server for what it has
 
     Dir[@local_match].each do |filepath|
       file = @files.find { |f| f.filepath == filepath }
