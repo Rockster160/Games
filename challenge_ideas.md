@@ -1,3 +1,6 @@
+LinkedList (Library Reservation)
+Tree Recursion (Self Referential)
+
 Cards - 5 Card Draw + exchange cards + win detection
 √ Numbers - Random generation with weights
 Words - Transformation
@@ -13,7 +16,7 @@ Free search parser
 RoboMouse
 Endpoint that you can Ping to start, and responds with available directions.
 Can then send another request with a given Direction (LRSB), and response will be next available directions (LRSB)
-Meta data should include the number of moves made and whether or not the current position is the goal or not. 
+Meta data should include the number of moves made and whether or not the current position is the goal or not.
 Store the map and the current coord server side somehow.
 
 Gaming App

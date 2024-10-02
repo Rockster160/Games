@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Finder → Locations → Network → zoropc → connect → username:"owner"
+# Finder → Locations → Network → zoropc → connect → username:"owner" password: Z!
 # cd to the current (downloads) directory before running!
 
 # open -a "Google Chrome" "https://bsaber.com/?s=Iridium"
