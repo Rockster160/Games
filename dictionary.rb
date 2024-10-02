@@ -10,7 +10,7 @@ class Dictionary
     end
 
     def words
-      @@_dictionary ||= File.read("/usr/share/dict/words").split("\n")
+      @@_dictionary ||= File.read("/usr/share/dict/words").downcase.split("\n")
     end
   end
 end

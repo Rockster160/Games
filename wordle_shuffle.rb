@@ -40,7 +40,10 @@ class Word
     5.times.map { |idx|
       possibles_at_char(idx)
     }.then { |matrix|
-      matrix.shift.product(*matrix)
+      yellows = @yellow.flatten.uniq
+      matrix.shift.product(*matrix).select { |chars|
+        yellows.none? || yellows.all? { |char| chars.include?(char) }
+      }
     }.map(&:join)
   end
 
