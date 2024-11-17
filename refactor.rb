@@ -141,8 +141,13 @@ def refactor(path, from_snake, to_snake, style=:replace)
   to_pascal = to_pascal_case(to_snake)
 
   if style == :inline
-    puts "\e[36m" + refactor_text(path, from_snake, to_snake) + "\e[0m"
-    return
+    inline_text = refactor_text(path, from_snake, to_snake)
+    if __FILE__ == $0
+      puts "\e[36m#{inline_text}\e[0m"
+      return
+    else
+      return inline_text
+    end
   end
 
   find_files(path).each do |filepath|

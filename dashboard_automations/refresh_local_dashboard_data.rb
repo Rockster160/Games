@@ -8,7 +8,7 @@ new_env_hash = eval(raw_env)
 ["SHLVL", "PWD", "_"].each { |blacklist| new_env_hash.delete(blacklist) }
 new_env_hash.each { |k, v| ENV[k] = v }
 
-# Can't run from cron! Use launchd
+# Can't run iCalBuddy from cron! Use launchd
 # https://github.com/ali-rantakari/icalBuddy/issues/5
 
 # crontab -l
@@ -19,6 +19,7 @@ new_env_hash.each { |k, v| ENV[k] = v }
 # * * * * * /Users/rocco/.rbenv/shims/ruby /Users/rocco/code/games/dashboard_automations/refresh_local_dashboard_data.tmp.rb
 # * * * * * open -g /Applications/RefreshLocalDashboardData.app
 
+require "date"
 require "json"
 require "open3"
 require "rest-client"
@@ -44,18 +45,27 @@ class DataManager
     @new_data = @old_data.dup
   end
 
+  def data
+    @new_data
+  end
+
   def update
     puts "\e[33m[LOGIT] | Updating: #{@type}\e[0m"
     @new_data = get
     if @new_data.to_json != @old_data.to_json
+      formatted_data = data
       failed = false
-      # ["http://localhost:3141/webhooks/local_data"].each do |url|
-      ["https://ardesian.com/webhooks/local_data", "http://localhost:3141/webhooks/local_data"].each do |url|
+      [
+        "https://ardesian.com/jil/trigger/local_data",
+        "http://localhost:3141/jil/trigger/local_data",
+      ].each do |url|
+        next if formatted_data.nil? || formatted_data.length == 0
+
         headers = { "Authorization": "Basic #{ENV['PORTFOLIO_AUTH']}" }
-        RestClient.post(url, { local_data: { @type => @new_data } }, headers)
+        RestClient.post(url, { local_data: { @type => formatted_data } }, headers)
       rescue StandardError => e
         puts "\e[31mFailed: #{e.message}\e[0m"
-        failed = true
+        failed = true unless url.include?("localhost")
         # no-op - don't fail if servers fail to connect
       end
       File.write(@filename, @new_data.to_json) unless failed
@@ -137,9 +147,9 @@ class Calendar < DataManager
 
     current_day = ""
     fixed_cal.split("\n").each_with_object({}) { |line, obj|
-      next if line == ""
+      next if line.to_s == ""
       if line.match?(/\w{3} \d{1,2}, \d{4}:#{separators[:section]}/)
-        current_day = line[/\w{3} \d{1,2}, \d{4}/]
+        current_day = line[/\w{3} \d{1,2}, \d{4}/].to_sym
         next
       end
 
@@ -149,10 +159,7 @@ class Calendar < DataManager
       name = title.sub(calendar_regex, "").sub(separators[:bullet], "")
 
       obj[current_day] ||= []
-      data = {
-        name: name,
-        calendar: calendar,
-      }
+      data = { name: name, calendar: calendar }
       parts.each do |part|
         partname = part[/\w+: /]
         if partname.nil?
@@ -164,15 +171,68 @@ class Calendar < DataManager
         partdata = part.sub(/^#{partname}/, "")
         data[partname[0..-3].to_sym] = partdata.gsub(separators[:newline], "\n").strip
       end
+      full_time = "#{current_day} #{data[:start_time]}"
+      begin
+        timestamp = DateTime.parse(full_time).to_time.to_i
+      rescue => e
+        timestamp = data[:start_time]
+      end
+      data[:unix] = "unix:#{timestamp}:#{data[:uid]}"
       obj[current_day] << data
     }
+  end
+
+  def data
+    all_keys = (@new_data.keys + @old_data.keys).uniq
+    changes = {}
+
+    if ARGV.include?("resync")
+      changes = @new_data
+      all_keys = [] # Prevents the block below from running
+    end
+
+    all_keys.each do |date|
+      changes[date] = []
+      if @new_data.key?(date) && !@old_data.key?(date)
+        changes[date] = @new_data[date]
+        next
+      end
+      if !@new_data.key?(date) && @old_data.key?(date)
+        @old_data[date].each do |event|
+          changes[date] << { unix: event[:unix], remove: true }
+        end
+        next
+      end
+
+      @new_data[date].each do |new_event|
+        old_event = @old_data[date].find { |e| e[:unix] == new_event[:unix] }
+        next changes[date] << new_event if !old_event
+        next changes[date] << new_event if old_event.keys != new_event.keys
+        found_change = new_event.find { |key, val| old_event[key] != val }
+        changes[date] << new_event if found_change
+      end
+
+      @old_data[date].each do |old_event|
+        new_event = @new_data[date].find { |e| e[:unix] == old_event[:unix] }
+        changes[date] << { unix: old_event[:unix], remove: true } if !new_event
+      end
+    end
+    changes.reject! { |k,v| v.nil? || v.length == 0 }
+
+    return [] if changes.length == 0
+    puts changes.to_json
+
+    changes
   end
 end
 
 now = Time.now
 # Only refresh at 3am each day -- this can take a long time to run.
-Contacts.update if now.hour == 3 && now.min === 0
+# Contacts.update if now.hour == 3 && now.min === 0
 Calendar.update
+
+lastfile = File.join(__dir__, "lastrun.json") # json just hides the file
+File.write(lastfile, DateTime.now)
 
 ### Reminders.update
 ### Notes.update

@@ -1,6 +1,8 @@
 LinkedList (Library Reservation)
 Tree Recursion (Self Referential)
 
+Konami code to trigger secret event on a web page
+
 Cards - 5 Card Draw + exchange cards + win detection
 √ Numbers - Random generation with weights
 Words - Transformation
@@ -44,6 +46,58 @@ Payment App
   Track finances
   Save contacts
 
+1. Dungeon Room Generator
+  Create a class to generate randomized “dungeon rooms” for a text-based adventure game. Each room can:
+  	•	Randomly include items (like a “sword,” “shield,” or “potion”) and obstacles (like “spikes” or “locked doors”).
+  	•	Allow movement in one or more directions (north, south, east, west).
+  	•	Have a describe method to print a room description based on its contents and available exits.
+  	•	Bonus: Connect rooms so you can travel between them.
+2. Weather Forecaster
+  Write a “weather forecaster” that uses random weather patterns but makes them feel somewhat realistic:
+  	•	Track and print a 5-day forecast, with conditions like “sunny,” “rainy,” or “cloudy.”
+  	•	Temperatures should vary within a reasonable range based on the previous day’s forecast.
+  	•	Include a method to display the forecast in a friendly format.
+3. Potion Mixing Simulator
+  Create a simple alchemy system for mixing potions! Each potion has:
+  	•	A unique effect (e.g., “healing,” “strength boost”) and strength (randomized).
+  	•	Ingredients that you can randomly combine. If the combination is “correct,” you get a stronger effect; if it’s wrong, you get a “poison.”
+  	•	A mix method that lets you experiment with different combinations and returns a “potion” or a “failure.”
+    •	Potion Shop Reputation: The more potions the player successfully creates, the higher their reputation, which could lead to rarer ingredients or recipe hints.
+    •	Experimental Effects: For added fun, each mixing attempt could have a chance of producing an unintended side effect, like a color change, sparkles, or an aroma that attracts (or repels) customers.
+    •	Potion Storage: Add an expiration mechanic where potions lose strength over time, encouraging the player to mix fresh batches.
+    1.	Ingredient List:
+    •	Define a list of magical ingredients, each with properties that affect the potion’s outcome.
+    •	Each ingredient could have a type (e.g., “herb,” “mineral,” “liquid”) and an effect (e.g., “healing,” “strength boost,” “mana boost”).
+    •	Examples: Eye of Newt, Dragon Scale, Moon Dew, Phoenix Feather, Goblin Tears.
+    2.	Recipe Logic:
+    •	Create predefined recipes that the player can discover by experimenting. For instance, combining Eye of Newt with Moon Dew might create a “Healing Potion.”
+    •	Each recipe could have a specific combination of ingredients (type, order, quantity) required to succeed.
+    •	If the ingredients don’t match a known recipe, it produces a random “failure” result with a small chance of creating a rare potion.
+    3.	Mixing Potions:
+    •	Allow players to combine up to three ingredients in a single potion.
+    •	Provide feedback on the result, like “You’ve created a Weak Healing Potion!” or “Your concoction fizzles out into a smelly sludge.”
+    •	Track successful potions in an inventory, which could later be “sold” for profit or used for special effects (e.g., a rare potion boosts your mixing skill).
+    4.	Potion Effects:
+    •	Each successful potion should have an effect and a strength level, e.g., a “Healing Potion” that heals 20 HP or a “Mana Elixir” that restores 50 MP.
+    •	Failure potions could have amusing or random effects, like causing the user to sneeze uncontrollably or turn a random color.
+    5.	Rarity and Power:
+    •	Introduce rarities for potions: Common, Rare, Legendary. The rarer the potion, the stronger the effect and the higher its selling price.
+    •	Each mixing attempt could have a small chance to create a legendary potion if the ingredients are “close” to a known recipe.
+    6.	Random Events and Discoveries:
+    •	Occasionally, the game could throw in a random event, like finding a new recipe page or a mysterious ingredient that temporarily increases potion power.
+    •	Each potion mix might have a chance of yielding new clues about combinations, leading to more successful concoctions.
+4. Pet Tamagotchi
+  Build a virtual pet that you can interact with! The pet should:
+  	•	Have basic needs like hunger, happiness, and energy that change over time.
+  	•	Provide methods like feed, play, and rest to meet these needs.
+  	•	If neglected, it gets sad, and if well-taken care of, it’s happy!
+  	•	Bonus: Add randomness to its behavior (it might refuse to eat sometimes or randomly get tired).
+5. Treasure Map
+  Design a “treasure map” grid where each cell can either contain treasure, an obstacle, or be empty.
+  	•	Provide a generate_map method to create a randomized map with treasure scattered around.
+  	•	Allow “digging” at a specific cell to check if there’s treasure there.
+  	•	Include a way to track which cells have been dug up already and display a summary of the total treasure found so far.
+
 
 Ruby concepts:
   Adding custom methods inside of blocks. Use Engine::Pencil for reference
@@ -55,7 +109,7 @@ end
 
 
 Machine Learning?
-  Given a large set of numbers (10k random)
+  Given a large set of random numbers (10k, for example)
     Create an algorithm that generates roughly the same generation lines
       (For example, the 10k numbers create a bell curve- write a function that generates numbers that fall on the same bell curve)
 

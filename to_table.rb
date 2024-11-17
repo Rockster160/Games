@@ -13,19 +13,24 @@ class ToTable
     # header behavior? (alignment, hr below, etc...)
   end
 
+  def uncolor(str) = str.to_s.gsub(/\e\[.*?m/, "")
+  def invisible_count(str) = str.to_s.scan(/\e\[[\d;]+m/).join.length
+
   def render(rows)
     @sizes = []
     rows.each { |row| row.each_with_index { |cell, idx|
-      @sizes[idx] = [@sizes[idx], cell.to_s.length+@opts[:padding]].compact.sort.reverse.first
+      @sizes[idx] = [@sizes[idx], uncolor(cell).length+@opts[:padding]].compact.sort.reverse.first
     } }
     rows.map.with_index { |row, ridx| row.map.with_index { |cell, idx|
+      spacer = @sizes[idx] - uncolor(cell).length
       case @opts[:align]
       when :right
-        print cell.to_s.rjust(@sizes[idx])
+        print (" "*spacer) + cell.to_s
       when :center
-        print cell.to_s.center(@sizes[idx])
+        half = spacer/2.0
+        print (" "*half.floor) + cell.to_s.center(@sizes[idx]) + (" "*half.ceil)
       else # :left
-        print cell.to_s.ljust(@sizes[idx])
+        print cell.to_s + (" "*spacer)
       end
 
       cell

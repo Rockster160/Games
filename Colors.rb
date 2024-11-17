@@ -132,9 +132,11 @@ def scale(value, f1, f2, t1, t2)
   (value - f1) * tr / fr.to_f + t1
 end
 
-def show(color)
+def show(color, text=nil)
   color = color.first if color.is_a?(Array) && color.length == 1
   r, g, b = color.is_a?(String) ? hex_to_rgb(color) : color.map(&:to_i)
+
+  puts "\e[48;2;#{r};#{g};#{b}m#{text}\e[0m" unless text.nil?
 
   ri, gi, bi = scale(r, 0, 255, 0, 5).round
   gi, bi = [g,b].map { |c| scale(c, 0, 255, 0, 5).floor }
@@ -142,8 +144,27 @@ def show(color)
   gn = gi * 6 # row offset
   bn = bi # col offset
 
-  spit(rn + gn + bn)
+  return spit(rn + gn + bn) if text.nil?
 end
+
+# [
+# "#2b303b",
+# "#343d46",
+# "#4f5b66",
+# "#65737e",
+# "#a7adba",
+# "#c0c5ce",
+# "#dfe1e8",
+# "#eff1f5",
+# "#bf616a",
+# "#d08770",
+# "#ebcb8b",
+# "#a3be8c",
+# "#96b5b4",
+# "#8fa1b3",
+# "#b48ead",
+# "#ab7967",
+# ].each {|c| show(c, c) }; nil
 
 # show("#EF1CB1")
 # show([239, 28, 177]) # rgb(155, 28, 177)

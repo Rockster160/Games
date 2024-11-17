@@ -3,6 +3,8 @@
 # @logger.log("Quick message") # Timestamp msg
 # @logger.debug("Quick message") # [DEBUG](grey)Timestamp msg
 # @logger.error("Error message") # [ERROR](red)Timestamp msg
+#
+# `tail -f game.log`
 
 class Logger
   LOG_LEVELS = {

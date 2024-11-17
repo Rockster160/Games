@@ -140,7 +140,7 @@ class Tools
           print clean.send(just, column_widths[x] + invisible_count(cell))
         end
         puts # Move to the next line after each row
-      end; nil
+      end
     end
 
     def pretty_json(raw_json)
@@ -170,6 +170,11 @@ class Tools
 
         durations << "#{count}#{time}"
       end.join(" ")
+    end
+
+    def hashes_to_csv(hashes)
+      keys = hashes.each_with_object(Set.new) { |row, set| set.merge(row.keys) }
+      [keys.to_a] + hashes.map { |row| keys.map { |k| row[k] } }
     end
 
     # Default just aligns each row with ljust
