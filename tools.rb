@@ -1,10 +1,14 @@
+# require "/Users/rocco/code/games/tools.rb"
+
 require "/Users/rocco/code/games/tools_json_parser"
 require "/Users/rocco/code/games/to_table.rb"
+require "/Users/rocco/code/games/tools/pry_formatter.rb"
 
 class Tools
   class << self
     def inspect
       pst("Tools.random_color")
+      pst("Tools.pigment(\"#FF0000\")")
       pst("Tools.count_each(arr)")
       pst("Tools.months_between(date1, date2)")
       pst("Tools.measure_block do ...")
@@ -23,6 +27,23 @@ class Tools
     # Random Color
     def random_color
       "##{('%06x' % (rand * 0xffffff))}".upcase
+    end
+
+    # Terminal output of the color
+    def pigment(val)
+      raise "Invalid format. Must match #000000" unless val.match?(/^#[0-9a-f]{6}$/i)
+
+      contrast = val[1..6].to_i(16) > 0xffffff / 2 ? "30" : "97"
+      r, g, b = val[1..6].scan(/.{2}/).map { |v| v.to_i(16) }
+      "\e[48;2;#{r};#{g};#{b}m\e[#{contrast}m#{val}\e[0m"
+    end
+
+    def apply_pigments(str, rx=nil)
+      # puts Tools.apply_pigments(output_string) # Highlight ALL Hex Colors
+      # puts Tools.apply_pigments(output_string, / color:.*?\n/) # Highlight Hex Colors in matching area
+      str.gsub(rx || /#[0-9a-f]{6}(?:\b|$)/i) { |val|
+        val.match?(/^#[0-9a-f]{6}$/i) ? pigment(val) : apply_pigments(val)
+      }
     end
 
     # Count same objects in array
