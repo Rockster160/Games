@@ -1,8 +1,8 @@
 # require "/Users/rocco/code/games/tools.rb"
 
+require "pry-rails"
 require "/Users/rocco/code/games/tools_json_parser"
 require "/Users/rocco/code/games/to_table.rb"
-require "/Users/rocco/code/games/tools/pry_formatter.rb"
 
 class Tools
   class << self
@@ -71,7 +71,12 @@ class Tools
     end
     #=> 5
 
-    require "pry-rails"
+    # Returns a string for a number with comma delimiters
+    def delimiter(num)
+      num.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+    end
+    #=> "1,234,567"
+
     class DotHash < Hash
       def method_missing(method, *args, &block)
         if self.key?(method.to_s.to_sym)
@@ -117,7 +122,6 @@ class Tools
     def branches(hash)
       pp to_dot(hash).branches
     end
-
     # { a: nil, b: [1, 2, 3], c: { e: :f, g: [:a2, :b2, :c2], h: {a3: 1, b3: 2, c3: 3} }, d: 1 }
     # {"a"=>nil,
     #   "b.0"=>1,
@@ -141,7 +145,7 @@ class Tools
     def measure_block(&block)
       t = Time.now.to_f
       yield
-      Time.now.to_f - t
+      duration(t - Time.now.to_f)
     end
     def measure_x_blocks(count=10000, &block)
       count.times.map { measure_block(&block) }.sum / count.to_f
@@ -208,6 +212,11 @@ class Tools
       # TODO: Should be able to pass options to align each column differently
       # TODO: If rows_array is an array of hashes, use the keys as headers
       ToTable.show(rows_array)
+    end
+
+    def progress_bar(count, enumerator, &block)
+      require "/Users/rocco/code/games/progress_bar.rb"
+      ProgressBar.track(count, enumerator, &block)
     end
   end
 end

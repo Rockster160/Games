@@ -15,6 +15,8 @@ Free search parser
   * If multiple of the same thing (name:Rocco name:Luffy) auto do an OR between these two
     * Otherwise everything does AND
 
+| A plane has 100 seats and 100 passengers. Each passenger has a assigned seat indicated on their boarding pass. The first passenger to board the plane has lost their boarding pass and, therefore, chooses a seat at random. Every subsequent passenger boards the plane and either sits in their assigned seat if it's available or chooses a random unoccupied seat if their seat is already taken. What is the probability that the last passenger to board the plane will end up in their assigned seat?
+
 RoboMouse
 Endpoint that you can Ping to start, and responds with available directions.
 Can then send another request with a given Direction (LRSB), and response will be next available directions (LRSB)

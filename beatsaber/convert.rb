@@ -1,26 +1,13 @@
 #!/usr/bin/env ruby
 
-# Finder → Locations → Network → zoropc → connect → username:"owner" password: Z!
+# Finder → Locations → Network → zoropc → Connect As → Registered User → username:"owner" password: Z!
 # cd to the current (downloads) directory before running!
 
 # open -a "Google Chrome" "https://bsaber.com/?s=Iridium"
 
-def url_list(array)
-  [
-    "She Wants Me by The Happy Fits",
-    "Something Just Like This",
-    "Wake Me Up by Avicii",
-    "Determinate",
-  ].each { |str|
-    `open -a \"Google Chrome\" \"https://bsaber.com/?s=#{URI::Parser.new.escape(str)}\"`
-  }
-end
-
-def esc(original_filename)
-  escaped = original_filename.gsub(/[ \(\)\&\'\"\$\`\*\?\!\{\}\[\]\;\|\>\<\\]/) { |match| "\\" + "#{match}" }
-  *path, filename = escaped.gsub(/\/$/, "").split("/")
-  [path.join("/") + "/", filename]
-end
+@args, @options = ARGV.each_with_object([[], []]) { |arg, memo|
+  arg.start_with?("--") ? memo[1] << arg : memo[0] << arg
+}
 
 def pst(msg, color: :grey)
   code = (
@@ -33,7 +20,21 @@ def pst(msg, color: :grey)
     else 90
     end
   )
+  @code = code
   puts "\e[#{code}m#{msg}\e[0m"
+end
+
+def esc(original_filename)
+  original_filename.gsub(/[ \(\)\&\'\"\$\`\*\?\!\{\}\[\]\;\|\>\<\\]/) { |match| "\\" + "#{match}" }
+end
+
+def show(file)
+  "'\e[94m#{file}\e[#{@code || 0}m'"
+end
+
+def path_and_folder(filepath)
+  *path, filename = filepath.gsub(/\/$/, "").split("/")
+  [path.join("/") + "/", filename]
 end
 
 def unzip(path, folder)
@@ -44,39 +45,41 @@ def unzip(path, folder)
   if folder_name.nil?
     return [path, folder]
   elsif File.directory?(new_filepath)
-    File.delete(old_filepath)
-    pst "Unzipped already exists: #{folder_name}. Deleting #{folder}"
+    pst "Unzipped already exists: #{show(folder_name)}"
+    pst " → Deleting #{show(folder)}" if File.exist?(old_filepath)
+    File.delete(old_filepath) if File.exist?(old_filepath)
     return [path, folder_name]
   end
 
   # Create a folder with the extracted name
-  system("mkdir #{new_filepath}")
+  system("mkdir #{esc(new_filepath)}")
   # Extract the contents of the zip file into the created folder
-  system("unzip -q #{old_filepath} -d #{new_filepath}")
+  system("unzip -q #{esc(old_filepath)} -d #{esc(new_filepath)}")
   # Remove the old zipfile
-  system("rm #{old_filepath}")
+  system("rm #{esc(old_filepath)}")
 
-  pst "Extracted: #{folder} → #{folder_name}"
+  pst "Extracted: #{show(folder)} → #{show(folder_name)}"
   return [path, folder_name]
 rescue StandardError => e
   pst("zip[#{e.class}]#{e.message}", color: :red)
 end
 
 def correct_filename(path, folder)
-  filename = folder.match(/^[\w]{3,6} \((.*?)\)\/?$/).to_a[1]
+  filename = folder.match(/^[\w]{3,6}.*?\((.*?)\\?\)\/?$/).to_a[1]
   return [path, folder] if filename.nil?
 
+  old_filepath = [path, folder].join("")
   new_filepath = [path, filename].join("")
   if File.directory?(new_filepath)
-    pst "File already exists: #{new_filepath}. Deleting #{folder}"
-    system("rm -r #{new_filepath}")
+    pst "File already exists: #{show(new_filepath)}"
+    pst "Deleting #{show(folder)}" if File.exist?(old_filepath)
+    system("rm -r #{esc(new_filepath)}") if File.exist?(old_filepath)
     return [path, filename]
   end
 
-  old_filepath = [path, folder].join("")
   # File.rename(folder, new_filepath)
-  system("mv #{old_filepath} #{new_filepath}")
-  pst "Renamed: #{folder} → #{filename}"
+  system("mv #{esc(old_filepath)} #{esc(new_filepath)}")
+  pst "Renamed: #{show(folder)} → #{show(filename)}"
   return [path, filename]
 rescue StandardError => e
   pst("rename[#{e.class}]#{e.message}", color: :red)
@@ -86,10 +89,10 @@ def transfer(path, folder)
   filepath = [path, folder].join("")
 
   # "/Users/rocco/Downloads/TWENTY\\ TWENTY\\ -\\ Jonas_0_0,\\ minsiii"
-  if system("mv #{filepath} /Volumes/CustomLevels/#{folder}")
-    pst("File moved to Windows: #{folder}")
+  if system("mv #{esc(filepath)} /Volumes/CustomLevels/#{esc(folder)}")
+    pst("File moved to Windows: #{show(folder)}")
   else
-    pst("Failed to move #{folder}", color: :red)
+    pst("Failed to move #{show(folder)}", color: :red)
   end
 
   return [path, folder]
@@ -97,7 +100,42 @@ rescue StandardError => e
   pst("mv[#{e.class}]#{e.message}", color: :red)
 end
 
-folders = ARGV.map { |folder| esc(folder) }
+# --------------------------------------------------------------------------------------------------
+
+if @options.include?("--fix-transferred")
+  bad_files = Dir.glob("/Volumes/CustomLevels/*").select {|f| f.match?(/[\w]{3,6} \((.*?)\)\/?$/)}
+  bad_files.each do |bad_file|
+    filename = bad_file.match(/^.*?\/(.*?)$/).to_a[1]
+    new_filename = filename.match(/^[\w]{3,6} \((.*?)\)\/?$/).to_a[1]
+    new_file = bad_file.gsub(filename, new_filename)
+    pst "Renaming: #{show(filename)} → #{show(new_filename)}"
+    system("mv #{esc(bad_file)} #{esc(new_file)}")
+  end
+  exit
+end
+
+if !@args.first.to_s.include?("/")
+  require "uri"
+
+  ARGV.each do |str|
+    pst " → Searching #{show(str)}"
+    `open -a \"Google Chrome\" \"https://beatsaver.com/?q=#{URI::Parser.new.escape(str)}\"`
+  end
+  pst " → /Users/rocco/code/games/beatsaber/convert.rb"
+  exit
+end
+
+if !Dir.exist?("/Volumes/CustomLevels") || @options.include?("--skip-transfer")
+  puts "\e[31m[ERROR] -- Windows drive not mounted\e[0m"
+  puts "\e[90m → include --skip-transfer to bypass\e[0m"
+  puts "\e[90m → Finder → Locations → Network → zoropc → Connect As → Registered User → username:\"owner\" password: Z!\e[0m"
+  puts "\e[90m → [NOTE!] After connecting, be sure to double-click/open the CustomLevels file to complete the connection.\e[0m"
+  exit
+end
+
+`cd /Users/rocco/Downloads`
+
+folders = @args.map { |filename| path_and_folder(filename) }
 unzipped = folders.filter_map { |path, folder| unzip(path, folder) }
 corrected = unzipped.filter_map { |path, folder| correct_filename(path, folder) }
-corrected.filter_map { |path, folder| transfer(path, folder) }
+corrected.filter_map { |path, folder| transfer(path, folder) } unless @options.include?("--skip-transfer")
