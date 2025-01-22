@@ -1,8 +1,12 @@
+# Add helpful syntax here:
+# /Users/rocco/code/cheat/colors.md
+# `cheat colors o`
+
 require "pry-rails"
 # •█▒
 # 𓀠
 
-## Style - Additional arg
+## Style - Additional arg ("\e[36;4mHello\e[0m")
 # 1 bold
 # 4 underline
 # 3 italic
@@ -32,21 +36,21 @@ require "pry-rails"
 
 # rgb(1,96,255)
 
-# (0..7).each do |code|
-#   # Colors are done using "{escape}{style}{color}m" The "m" ends the escape code for the color args.
-#   esc = "\e[" # <-- This is an escape code, normally followed by a handful of special chars
-#   normal_style = "3" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
-#   light_style = "9" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
-#   normal_bg = "4" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
-#   light_bg = "10" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
-#   end_escape_sequence = "m"
-#   clear_code = "\e[0m" # Set the color back to "0" meaning reset all values
-#   print "#{esc}#{normal_style}#{code}#{end_escape_sequence}Yay color!#{clear_code}"
-#   print "#{esc}#{light_style}#{code}#{end_escape_sequence}-- Light --#{clear_code}"
-#   print "#{esc}#{normal_bg}#{code}#{end_escape_sequence} Yay background! #{clear_code}"
-#   print "#{esc}#{light_bg}#{code}#{end_escape_sequence} Light background! #{clear_code}"
-#   print "\n"
-# end
+(0..7).each do |code|
+  # Colors are done using "{escape}{style}{color}m" The "m" ends the escape code for the color args.
+  esc = "\e[" # <-- This is an escape code, which is followed by a handful of characters/arguments that tell the terminal how to display the text.
+  normal_style = "3" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+  light_style = "9" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+  normal_bg = "4" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+  light_bg = "10" # 3 is "normal" - can also use 9 for light, 4 for normal background, and 10 for light background
+  end_escape_sequence = "m"
+  clear_code = "\e[0m" # Set the color back to "0" meaning reset all values
+  print "#{esc}#{normal_style}#{code}#{end_escape_sequence}Yay color!#{clear_code}"
+  print "#{esc}#{light_style}#{code}#{end_escape_sequence}-- Light --#{clear_code}"
+  print "#{esc}#{normal_bg}#{code}#{end_escape_sequence} Yay background! #{clear_code}"
+  print "#{esc}#{light_bg}#{code}#{end_escape_sequence} Light background! #{clear_code}"
+  print "\n"
+end
 
 # {
 #   black:         30,

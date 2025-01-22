@@ -1,5 +1,11 @@
 #!/usr/bin/env ruby
 
+# -- Call with song names to look them up
+# bsaber Iridium Hottogo "Simple and clean" "Ocean Avenue"
+
+# -- Call with a path to a file to convert/transfer it
+# bsaber /Users/rocco/Downloads/425d4\ \(Simple\ And\ Clean\ -\ RateGyro\ \&\ OneSpookyBoi\).zip
+
 # Finder → Locations → Network → zoropc → Connect As → Registered User → username:"owner" password: Z!
 # cd to the current (downloads) directory before running!
 
@@ -121,6 +127,11 @@ if !@args.first.to_s.include?("/")
     pst " → Searching #{show(str)}"
     `open -a \"Google Chrome\" \"https://beatsaver.com/?q=#{URI::Parser.new.escape(str)}\"`
   end
+  pst " → /Users/rocco/code/games/beatsaber/convert.rb"
+  exit
+end
+
+if ARGV.empty?
   pst " → /Users/rocco/code/games/beatsaber/convert.rb"
   exit
 end

@@ -29,12 +29,18 @@ class Tools
       "##{('%06x' % (rand * 0xffffff))}".upcase
     end
 
+    def hex_to_rgb(hex)
+      hex = hex.strip.gsub("#", "")
+      hex = hex.length == 3 ? hex.split("").map { |v| "#{v}#{v}" } : hex
+      raise "Invalid format. Must pass a valid 3 or 6 length hex string." unless hex.match?(/^[0-9a-f]{6}$/i)
+
+      r, g, b = hex.scan(/.{2}/).map { |v| v.to_i(16) }
+    end
+
     # Terminal output of the color
     def pigment(val)
-      raise "Invalid format. Must match #000000" unless val.match?(/^#[0-9a-f]{6}$/i)
-
+      r, g, b = hex_to_rgb(val)
       contrast = val[1..6].to_i(16) > 0xffffff / 2 ? "30" : "97"
-      r, g, b = val[1..6].scan(/.{2}/).map { |v| v.to_i(16) }
       "\e[48;2;#{r};#{g};#{b}m\e[#{contrast}m#{val}\e[0m"
     end
 

@@ -19,7 +19,7 @@ class ToolsJsonParser
     end
 
     def parse(ojson)
-      JSON.parse(ojson)
+      JSON.parse(ojson.strip.gsub(/\n/, "").gsub(/ {2,}/, " "))
     rescue JSON::ParserError
       raw_json = ojson.to_s.dup
       # token = gen_token(raw_json)
@@ -55,8 +55,6 @@ class ToolsJsonParser
       # raw_json.gsub!(token, "\"")
 
       raw_json.empty? ? "\e[90mnull\e[0m" : JSON.parse(raw_json)
-    # rescue
-    #   require "pry-rails"; binding.pry
     end
 
     def color(color_sym, txt="")
@@ -90,17 +88,19 @@ class ToolsJsonParser
       case obj
       when Hash
         return color(:white, "{}") if obj.none?
-        longest_key = obj.keys.sort_by(&:length).last&.length.to_i + "\"\": ".length
+        longest_key = obj.keys.sort_by(&:length).last&.length.to_i + ": ".length
+        # longest_key = obj.keys.sort_by(&:length).last&.length.to_i + "\"\": ".length
         "#{color(:white)}{\n" + obj.map { |k, v|
-          "#{indent(dent)}#{color(:orange, "\"#{k}\": ".ljust(longest_key))}" + pretty_object(v, dent+1)
-        }.join("#{color(:white)},\n") + "\n#{indent(dent-1)}#{color(:white)}}"
+          "#{indent(dent)}#{color(:orange, "#{k}: ".ljust(longest_key))}" + pretty_object(v, dent+1)
+          # "#{indent(dent)}#{color(:orange, "\"#{k}\": ".ljust(longest_key))}" + pretty_object(v, dent+1)
+        }.join("#{color(:white)}, \n") + "\n#{indent(dent-1)}#{color(:white)}}"
       when Array
         return color(:white, "[]") if obj.none?
         "#{color(:white)}[\n" + obj.map { |v|
           indent(dent) + pretty_object(v, dent+1)
-        }.join("#{color(:white)},\n") + "\n#{indent(dent-1)}#{color(:white)}]"
+        }.join("#{color(:white)}, \n") + "\n#{indent(dent-1)}#{color(:white)}]"
       when String
-        color(:light_green, "\"#{obj}\"")
+        color(:light_green, "\"#{obj.gsub("\"", "\\\"")}\"")
       when Integer, Float
         color(:magenta, obj)
       when NilClass
