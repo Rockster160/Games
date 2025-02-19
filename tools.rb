@@ -4,6 +4,22 @@ require "pry-rails"
 require "/Users/rocco/code/games/tools_json_parser"
 require "/Users/rocco/code/games/to_table.rb"
 
+unless Object.new.respond_to?(:present?)
+  class Object
+    def present?
+      !blank?
+    end
+
+    def presence
+      self if present?
+    end
+
+    def blank?
+      respond_to?(:empty?) ? !!empty? : !self
+    end
+  end
+end
+
 class Tools
   class << self
     def inspect
@@ -29,12 +45,18 @@ class Tools
       "##{('%06x' % (rand * 0xffffff))}".upcase
     end
 
+    # Convert Hex to [R, G, B]
     def hex_to_rgb(hex)
       hex = hex.strip.gsub("#", "")
       hex = hex.length == 3 ? hex.split("").map { |v| "#{v}#{v}" } : hex
       raise "Invalid format. Must pass a valid 3 or 6 length hex string." unless hex.match?(/^[0-9a-f]{6}$/i)
 
       r, g, b = hex.scan(/.{2}/).map { |v| v.to_i(16) }
+    end
+
+    # Convert [R, G, B] to Hex
+    def rgb_to_hex(r, g, b)
+      "#" + [r, g, b].map { |c| c.to_s(16).rjust(2, "0") }.join("").upcase
     end
 
     # Terminal output of the color
@@ -141,6 +163,11 @@ class Tools
     #   "c.h.b3"=>2,
     #   "c.h.c3"=>3,
     #   "d"=>1}
+
+    def tokenizer
+      require "/Users/rocco/code/Portfolio/app/service/tokenizer.rb"
+      Tokenizer
+    end
 
     # Get the accessible methods of an object/class
     def methods(obj)

@@ -1,9 +1,9 @@
 dir = "/Users/rocco/imessage_export"
 filenames = Dir.entries(dir).select { |file| file.include?("Hype in the Chat") }
-# if ENV["USE_CACHE"].nil? || filenames.none? { |filename| !File.file?(filename) }
-#   puts "Resetting cache!"
-#   puts `rm -rf /Users/rocco/imessage_export; imessage-exporter -f txt`
-# end
+if ENV["USE_CACHE"].nil? || filenames.none? { |filename| !File.file?(filename) }
+  puts "Resetting cache!"
+  puts `rm -rf /Users/rocco/imessage_export; imessage-exporter -f txt`
+end
 
 # ==================== Helpers ====================
 require "/Users/rocco/code/games/message_parser.rb" # adds the Message class

@@ -7,6 +7,7 @@ class ToTable
     @opts = {}
     @opts[:align] = opts.delete(:align) || :left
     @opts[:padding] = opts.delete(:padding) || 1
+    @output = opts.key?(:output) ? opts.delete(:output) : true
     # alignment
     # borders
     # forced sized?
@@ -25,16 +26,16 @@ class ToTable
       spacer = @sizes[idx] - uncolor(cell).length
       case @opts[:align]
       when :right
-        print (" "*spacer) + cell.to_s
+        ((" "*spacer) + cell.to_s).tap { |s| @output && print(s) }
       when :center
         half = spacer/2.0
-        print (" "*half.floor) + cell.to_s.center(@sizes[idx]) + (" "*half.ceil)
+        ((" "*half.floor) + cell.to_s.center(@sizes[idx]) + (" "*half.ceil)).tap { |s| @output && print(s) }
       else # :left
-        print cell.to_s + (" "*spacer)
+        (cell.to_s + (" "*spacer)).tap { |s| @output && print(s) }
       end
 
       cell
-    }.join("\t").tap { puts } }.join("\n")
+    }.join("\t").tap { @output && puts } }.join("\n")
   end
 end
 # ToTable.show(array)

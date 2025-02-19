@@ -24,7 +24,7 @@ class Word
     end
 
     attempt.split("").each_with_index do |letter, idx|
-      case (mind || [])[idx]
+      case (mind || [])[idx] || "B"
       when "🟩", "G" then @green[idx] = letter
       when "⬛", "B" then @black << letter
       when "🟨", "Y" then @yellow[idx] << letter
@@ -73,6 +73,11 @@ if ARGV.include?("-c")
 end
 if ARGV.include?("-C")
   print "\e[32m"
+  puts File.read("/Users/rocco/code/games/test.wordle.words").split("\n") & word.possibilities.map(&:downcase)
+  print "\e[0m"
+end
+if ARGV.include?("-D")
+  print "\e[94m"
   puts Dictionary.words_at_length(5).map(&:downcase) & word.possibilities.map(&:downcase)
   print "\e[0m"
 end

@@ -21,6 +21,10 @@ def to_pascal_case(str)
   str.split("_").map(&:capitalize).join
 end
 
+def to_camel_case(str)
+  str.split("_").map.with_index { |word, idx| idx == 0 ? word : word.capitalize }.join
+end
+
 def to_snake_case(str)
   str.gsub(/::/, "/")
     .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
@@ -46,6 +50,7 @@ def refactor_text(text, from_snake, to_snake)
     .gsub(pluralize(to_pascal_case(from_snake)), pluralize(to_pascal_case(to_snake)))
     .gsub(to_pascal_case(from_snake), to_pascal_case(to_snake))
     .gsub(to_title(from_snake), to_title(to_snake))
+    .gsub(to_camel_case(from_snake), to_camel_case(to_snake))
     .gsub(Regexp.new(to_text(from_snake), Regexp::IGNORECASE), to_text(to_snake))
 rescue ArgumentError
   text
