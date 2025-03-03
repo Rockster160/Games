@@ -5,6 +5,7 @@
 #   end
 # end
 # replacer.save
+require "/Users/rocco/code/games/meta/differ.rb"
 
 class ReplaceableText
   attr_accessor :text, :starting_text, :matchdata
@@ -48,97 +49,16 @@ class ReplaceableText
     within(find, text, &block)
   end
 
-  def show_diff
-    diff_lines = diff
-    total_count = diff_lines.count
-    num = total_count.to_s.length
-    i1, i2 = 0, 0
-    diff_lines.each do |line|
-      if line.is_a?(String)
-        i1 = i2 + 1
-        puts "\e[38;2;180;180;180m #{(i2+=1).to_s.rjust(num)} | #{line}\e[0m"
-      else
-        line[:add].each do |add_line|
-          puts "\e[38;2;50;150;50m+#{(i2+=1).to_s.rjust(num)} | #{add_line}\e[0m"
-        end
-        line[:remove].each do |rem_line|
-          puts "\e[38;2;150;50;50m-#{(i1+=1).to_s.rjust(num)} | #{rem_line}\e[0m"
-        end
-      end
-    end
+  def changed?
+    @text != @starting_text
+  end
+
+  def show_diff(only_changes: false)
+    Differ.compare(@starting_text, @text, only_changes: only_changes)
   end
 
   def diff
-    str1, str2 = @starting_text, text
-    lines1 = str1.split("\n")
-    lines2 = str2.split("\n")
-    diff_result = []
-    idx1 = idx2 = 0
-    current_remove = [] # Batch of removed lines
-    current_add = []    # Batch of added lines
-
-    loop do
-      break if idx1 >= lines1.size && idx2 >= lines2.size
-
-      l1 = lines1[idx1]
-      l2 = lines2[idx2]
-
-      # When lines match, flush any pending diff batch
-      if idx1 < lines1.size && idx2 < lines2.size && l1 == l2
-        if current_remove.any? || current_add.any?
-          diff_result << { remove: current_remove, add: current_add }
-          current_remove = []
-          current_add = []
-        end
-        idx1 += 1
-        idx2 += 1
-        diff_result << l1
-        next
-      end
-
-      # If one string has ended, treat the rest as diff
-      if idx1 >= lines1.size
-        current_add << lines2[idx2]
-        idx2 += 1
-        next
-      end
-      if idx2 >= lines2.size
-        current_remove << lines1[idx1]
-        idx1 += 1
-        next
-      end
-
-      # Both lines exist but differ; attempt to realign using lookahead.
-      pos_in_lines2 =
-        idx1 + 1 < lines1.size ? lines2[idx2..-1].index(lines1[idx1 + 1]) : nil
-      pos_in_lines1 =
-        idx2 + 1 < lines2.size ? lines1[idx1..-1].index(lines2[idx2 + 1]) : nil
-
-      if pos_in_lines2 && (!pos_in_lines1 || pos_in_lines2 <= pos_in_lines1)
-        # Next line from lines1 found in lines2:
-        # Batch current removal and add any intervening added lines.
-        current_remove << l1
-        current_add.concat(lines2[idx2...(idx2 + pos_in_lines2)])
-        idx1 += 1
-        idx2 += pos_in_lines2
-      elsif pos_in_lines1
-        # Next line from lines2 found in lines1:
-        # Batch removals until that match and record current addition.
-        current_remove.concat(lines1[idx1...(idx1 + pos_in_lines1)])
-        current_add << l2
-        idx1 += pos_in_lines1
-        idx2 += 1
-      else
-        # No lookahead match; treat as a substitution.
-        current_remove << l1
-        current_add << l2
-        idx1 += 1
-        idx2 += 1
-      end
-    end
-
-    diff_result << { remove: current_remove, add: current_add } if current_remove.any? || current_add.any?
-    diff_result
+    Differ.diff(@starting_text, @text)
   end
 
   def full_line(line)
@@ -318,6 +238,11 @@ class FileReplacer
       prev = imports[1].strip.split(/,/).map { |s| s.strip.to_sym }
       imports.replace(imports[1], (prev + klasses.map(&:to_sym)).uniq.join(", "))
     } || add_after_last(/^import [^;]*;$/m, "import { #{klasses.join(", ")} } from \"#{from}\";")
+  end
+
+  def show_diff(only_changes: false)
+    # Need to be explicit because of named arguments, maybe?
+    content.show_diff(only_changes: only_changes)
   end
 
   def method_missing(method, *args, &block)
