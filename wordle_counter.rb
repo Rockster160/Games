@@ -39,12 +39,12 @@ def points(wordles)
   now = DateTime.now
   this_month = DateTime.new(now.year, now.month, 1).then { |m| m..((m >> 1) - 1) }
   this_month_days = this_month.then { |d| date_wordle(d.first)..date_wordle(d.last) }
-  last_month = (this_month.first << 1).then { |m| m..((m >> 1) - 1) }
-  last_month_days = last_month.then { |d| date_wordle(d.first)..date_wordle(d.last) }
+  # last_month = (this_month.first << 1).then { |m| m..((m >> 1) - 1) }
+  # last_month_days = last_month.then { |d| date_wordle(d.first)..date_wordle(d.last) }
 
   alltime_scores = { Rocco: 0, Saya: 0, Brendan: 0 }
   month_scores = { Rocco: 0, Saya: 0, Brendan: 0 }
-  last_month_scores = { Rocco: 0, Saya: 0, Brendan: 0 }
+  # last_month_scores = { Rocco: 0, Saya: 0, Brendan: 0 }
   author_wordles = { Rocco: [], Saya: [], Brendan: [] }
 
   wordles.each do |m|
@@ -54,12 +54,12 @@ def points(wordles)
 
     alltime_scores[m.author] += 7 - m.wordle_score
 
+    # if last_month_days.cover?(m.wordle_day)
+    #   last_month_scores[m.author] += 7 - m.wordle_score
+    # end
+
     if this_month_days.cover?(m.wordle_day)
       month_scores[m.author] += 7 - m.wordle_score
-    end
-
-    if last_month_days.cover?(m.wordle_day)
-      last_month_scores[m.author] += 7 - m.wordle_score
     end
   end
 
@@ -68,10 +68,10 @@ def points(wordles)
     puts pad_right("#{name}:", 8) + pad_left(number_with_delimiter(score), 6)
   end
 
-  puts " #{last_month.first.strftime("%B")} ".center(17, "-")
-  last_month_scores.sort_by { |k,v| -v }.each do |name, score|
-    puts pad_right("#{name}:", 8) + pad_left(number_with_delimiter(score), 6)
-  end
+  # puts " #{last_month.first.strftime("%B")} ".center(17, "-")
+  # last_month_scores.sort_by { |k,v| -v }.each do |name, score|
+  #   puts pad_right("#{name}:", 8) + pad_left(number_with_delimiter(score), 6)
+  # end
 
   puts " All Time ".center(17, "-")
   alltime_scores.sort_by { |k,v| -v }.each do |name, score|
