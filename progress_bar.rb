@@ -29,6 +29,7 @@ class ProgressBar
   end
 
   def show
+    return if total.to_i == 0
     width = 50
     percent = current/total.to_f
     filled = (width*percent).to_i

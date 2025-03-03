@@ -1,8 +1,10 @@
 dir = "/Users/rocco/imessage_export"
 filenames = Dir.entries(dir).select { |file| file.include?("Hype in the Chat") }
 if ENV["USE_CACHE"].nil? || filenames.none? { |filename| !File.file?(filename) }
-  puts "Resetting cache!"
+  puts "\e[33mResetting cache!\e[0m"
   puts `rm -rf /Users/rocco/imessage_export; imessage-exporter -f txt`
+else
+  puts "\e[33mUsing cache!\e[0m"
 end
 
 # ==================== Helpers ====================
@@ -16,6 +18,9 @@ end
 def number_with_delimiter(number, delimiter = ",")
   number.to_s.reverse.gsub(/(\d{3})(?=\d)/, "\\1#{delimiter}").reverse
 end
+def first_wordle_date = @first_wordle_date ||= DateTime.new(2021, 6, 19)
+def wordle_date(wordle_day) = first_wordle_date + wordle_day
+def date_wordle(date) = (date - first_wordle_date).to_i
 # / ==================== Helpers ====================
 
 Message.from_file(*filenames.map { |filename| "#{dir}/#{filename}" })
@@ -32,10 +37,14 @@ wordles = messages.select { |m|
 
 def points(wordles)
   now = DateTime.now
-  month_start = DateTime.new(now.year, now.month, 1)
+  this_month = DateTime.new(now.year, now.month, 1).then { |m| m..((m >> 1) - 1) }
+  this_month_days = this_month.then { |d| date_wordle(d.first)..date_wordle(d.last) }
+  last_month = (this_month.first << 1).then { |m| m..((m >> 1) - 1) }
+  last_month_days = last_month.then { |d| date_wordle(d.first)..date_wordle(d.last) }
 
   alltime_scores = { Rocco: 0, Saya: 0, Brendan: 0 }
   month_scores = { Rocco: 0, Saya: 0, Brendan: 0 }
+  last_month_scores = { Rocco: 0, Saya: 0, Brendan: 0 }
   author_wordles = { Rocco: [], Saya: [], Brendan: [] }
 
   wordles.each do |m|
@@ -44,13 +53,23 @@ def points(wordles)
     next if m.wordle_score > 6
 
     alltime_scores[m.author] += 7 - m.wordle_score
-    next unless m.timestamp > month_start
 
-    month_scores[m.author] += 7 - m.wordle_score
+    if this_month_days.cover?(m.wordle_day)
+      month_scores[m.author] += 7 - m.wordle_score
+    end
+
+    if last_month_days.cover?(m.wordle_day)
+      last_month_scores[m.author] += 7 - m.wordle_score
+    end
   end
 
   puts " #{now.strftime("%B")} ".center(17, "-")
   month_scores.sort_by { |k,v| -v }.each do |name, score|
+    puts pad_right("#{name}:", 8) + pad_left(number_with_delimiter(score), 6)
+  end
+
+  puts " #{last_month.first.strftime("%B")} ".center(17, "-")
+  last_month_scores.sort_by { |k,v| -v }.each do |name, score|
     puts pad_right("#{name}:", 8) + pad_left(number_with_delimiter(score), 6)
   end
 
@@ -117,6 +136,31 @@ def victories(messages)
   end
   puts "Last day: #{grouped_scores.keys.max { |day| day.gsub(/[^\d]/, "").to_i }}"
 end
+# victories(wordles)
+
+def missed_days(wordles)
+  days = wordles.map(&:wordle_day).uniq
+  range = days.minmax.then {|n,x| n..x }
+  author_days = { Rocco: [], Saya: [] }
+
+  wordles.each do |m|
+    author_days[m.author] << m.wordle_day if author_days.key?(m.author)
+  end
+
+  missed_days = {}
+  range.each do |day|
+    missed = []
+    missed << "Rocco" unless author_days[:Rocco].include?(day)
+    missed << "Saya" unless author_days[:Saya].include?(day)
+    missed_days[day] = missed unless missed.empty?
+  end
+
+  missed_days.sort.each do |day, authors|
+    puts "[#{wordle_date(day).strftime("%b %d")}] Wordle #{day}: #{authors.join(", ")} missed"
+  end
+end
+# missed_days(wordles)
+
 # require "pry-rails"; binding.pry
 # Rocco won 136 times
 # Brendan won 34 times
