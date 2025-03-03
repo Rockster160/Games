@@ -247,6 +247,14 @@ class Tools
       ToTable.show(rows_array)
     end
 
+    # Tools.progress_bar(klass.count, klass.each) do |obj|
+    #   obj.do_something
+    # end
+    # Tools.progress_bar(klass.count, klass.in_batches.each) do |batch|
+    #   batch.each do |obj|
+    #     obj.do_something
+    #   end
+    # end
     def progress_bar(count, enumerator, &block)
       require "/Users/rocco/code/games/progress_bar.rb"
       ProgressBar.track(count, enumerator, &block)

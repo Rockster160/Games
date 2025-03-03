@@ -19,6 +19,8 @@ class ToolsJsonParser
     end
 
     def parse(ojson)
+      return ojson if ojson.is_a?(Hash) || ojson.is_a?(Array)
+      # str_json = ojson.respond_to?(:to_json) ? ojson.to_json : ojson.to_s
       JSON.parse(ojson.strip.gsub(/\n/, "").gsub(/ {2,}/, " "))
     rescue JSON::ParserError
       raw_json = ojson.to_s.dup
@@ -59,19 +61,22 @@ class ToolsJsonParser
 
     def color(color_sym, txt="")
       color_code = {
-        orange:        "38;5;214",
+        orange:        "38;5;214", # 256 code
         black:         "30",
         light_black:   "90",
         red:           "31",
         light_red:     "91",
         green:         "32",
         light_green:   "92",
+        pine_green:    "38;2;50;150;50",
         yellow:        "33",
         light_yellow:  "93",
         blue:          "34",
         light_blue:    "94",
+        aqua:          "38;2;86;182;194", # rgb code
         magenta:       "35",
         light_magenta: "95",
+        # purple:        "38;2;200;0;200", # rgb code
         cyan:          "36",
         light_cyan:    "96",
         white:         "37",
@@ -84,36 +89,43 @@ class ToolsJsonParser
       "  "*n.clamp(0..)
     end
 
-    def pretty_object(obj, dent=1)
+    def pretty_object(obj, indent_level=1, multiline: true)
+      nl = multiline ? "\n" : ""
+      dent = multiline ? indent(indent_level) : " "
+      outdent = multiline ? indent(indent_level-1) : " "
       case obj
       when Hash
         return color(:white, "{}") if obj.none?
         longest_key = obj.keys.sort_by(&:length).last&.length.to_i + ": ".length
+        longest_key = 0 if !multiline
         # longest_key = obj.keys.sort_by(&:length).last&.length.to_i + "\"\": ".length
-        "#{color(:white)}{\n" + obj.map { |k, v|
-          "#{indent(dent)}#{color(:orange, "#{k}: ".ljust(longest_key))}" + pretty_object(v, dent+1)
-          # "#{indent(dent)}#{color(:orange, "\"#{k}\": ".ljust(longest_key))}" + pretty_object(v, dent+1)
-        }.join("#{color(:white)}, \n") + "\n#{indent(dent-1)}#{color(:white)}}"
+        "#{color(:white)}{#{nl}" + obj.map { |k, v|
+          "#{dent}#{color(:orange, "#{k}: ".ljust(longest_key))}" + pretty_object(v, indent_level+1)
+          # "#{dent}#{color(:orange, "\"#{k}\": ".ljust(longest_key))}" + pretty_object(v, indent_level+1)
+        }.join("#{color(:white)},#{nl}") + "#{nl}#{outdent}#{color(:white)}}"
       when Array
         return color(:white, "[]") if obj.none?
-        "#{color(:white)}[\n" + obj.map { |v|
-          indent(dent) + pretty_object(v, dent+1)
-        }.join("#{color(:white)}, \n") + "\n#{indent(dent-1)}#{color(:white)}]"
+        "#{color(:white)}[#{nl}" + obj.map { |v|
+          dent + pretty_object(v, indent_level+1)
+        }.join("#{color(:white)},#{nl}") + "#{nl}#{outdent}#{color(:white)}]"
       when String
-        color(:light_green, "\"#{obj.gsub("\"", "\\\"")}\"")
-      when Integer, Float
-        color(:magenta, obj)
+        color(:pine_green, obj.to_json)
+      when Symbol
+        color(:aqua, ":#{obj.to_s.gsub("\"", "\\\"")}")
+      when Numeric
+        color(:yellow, obj)
       when NilClass
         color(:light_black, :null)
       when TrueClass, FalseClass
-        color(:light_cyan, obj)
+        color(:magenta, obj)
       else
-        color(:red, "DEAD[#{obj}]")
+        pretty_object(obj.to_s, indent_level)
+        # color(:red, "DEAD[#{obj}]")
       end
     end
 
-    def pretty(json)
-      pretty_object(parse(json))
+    def pretty(json, multiline: true)
+      pretty_object(parse(json), multiline: multiline)
     end
   end
 end
